@@ -1,5 +1,6 @@
 type: hero-text
 description: Primary entry hero — title, lead, and optional call-to-action
+role: leaf
 
 fields:
   title:

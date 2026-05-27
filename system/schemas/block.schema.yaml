@@ -2,11 +2,12 @@ $schema: "https://json-schema.org/draft/2020-12/schema"
 $id: "yamleer://block.schema.yaml"
 
 type: object
-required: [type, description, fields]
+required: [type, description, role, fields]
 additionalProperties: false
 properties:
   type: { $ref: "#/$defs/identifier" }
   description: { type: string, minLength: 1 }
+  role: { type: string, enum: [atomic, structural, leaf] }
   fields:
     type: object
     propertyNames: { $ref: "#/$defs/identifier" }
@@ -22,6 +23,17 @@ properties:
     propertyNames: { $ref: "#/$defs/identifier" }
     additionalProperties: { $ref: "#/$defs/variant-spec" }
     minProperties: 1
+
+allOf:
+  - if:
+      properties:
+        role: { const: structural }
+      required: [role]
+    then:
+      required: [slots]
+    else:
+      properties:
+        slots: false
 
 $defs:
   identifier:

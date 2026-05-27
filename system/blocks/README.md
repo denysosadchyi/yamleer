@@ -4,19 +4,70 @@ Visual building shells composed by screen YAML and rendered to HTML by the
 block renderers in `index.js`. Blocks are referenced by `type` from screens
 and from slots of other blocks.
 
+## Role: every block declares one
+
+Each block file MUST declare `role` as one of three values:
+
+- **`atomic`** — self-contained content unit. Nests into a structural block
+  via that block's slot. Never appears directly in a template, never has
+  its own slots.
+  Examples: `card`, `text-block` (future), `list-item` (future).
+
+- **`structural`** — container with its own slots. Composes atomic blocks
+  into a region. Placed directly in a template slot or sequence. MUST have
+  at least one slot.
+  Examples: `section`.
+
+- **`leaf`** — full-width screen-level component. Placed directly in a
+  template but does not compose anything further. No slots.
+  Examples: `hero-text`, `cta-bar`.
+
+Mapping for the current four blocks:
+
+| block     | role       |
+|-----------|------------|
+| hero-text | leaf       |
+| section   | structural |
+| card      | atomic     |
+| cta-bar   | leaf       |
+
+## What the schema enforces directly
+
+- `role` is required and must be one of the three values.
+- `structural` blocks MUST have `slots`.
+- `atomic` and `leaf` blocks MUST NOT have `slots`.
+
+## What the post-validation walker enforces (Etap 3.3)
+
+The schema cannot reach across files to check role-vs-role composition. A
+walker that runs after `ajv` validates these two cross-file rules:
+
+1. **Template `allows`** (top-level for sequence mode, slot-level for
+   slotted mode) may contain only blocks with `role: leaf` or
+   `role: structural`. Atomic blocks never appear in a template.
+2. **A structural block's `slots.<x>.allows`** may contain only blocks
+   with `role: atomic`. Structural blocks compose atomic content, never
+   other structural blocks.
+
+These rules are normative — they encode the three-level composition
+hierarchy. The walker fails loud with the offending block name, its role,
+and the slot expectation.
+
 ## Three-level composition hierarchy
 
 ```
 atomic blocks      (card, text-block, list-item)
         ↑ nest into
 structural blocks  (section)
-        ↑ placed in
+        ↑ placed in (alongside leaf blocks)
 templates          (single-column, dashboard-grid)
+        ↑ which contain
+leaf blocks        (hero-text, cta-bar)
 ```
 
 Each level has a distinct role. Crossing levels — e.g., placing a `card`
-directly inside a template, or a `hero-text` inside a `section` — is either
-a validation error or a signal that an intermediate block type is missing.
+directly inside a template, or a `hero-text` inside a `section` — is a
+walker error (or, for `slots` absence violations, a schema error).
 
 ## Field vs slot decision tree
 

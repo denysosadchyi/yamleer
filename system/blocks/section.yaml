@@ -1,5 +1,6 @@
 type: section
 description: Titled content section — heading + body slot for atomic blocks
+role: structural
 
 fields:
   heading:
