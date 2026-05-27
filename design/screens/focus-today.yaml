@@ -1,0 +1,60 @@
+template: dashboard-grid
+
+slots:
+  header:
+    block: page-header
+    eyebrow: Wednesday · May 27
+    title: Today
+    meta: 5 tasks · 2 completed
+    action:
+      primitive: action
+      label: + Add task
+      intent: primary
+    tone: neutral
+
+  main:
+    - block: section
+      heading: Up next
+      tone: neutral
+      slots:
+        body:
+          - block: task-item
+            title: Draft Q2 strategy memo
+            done: false
+            due: "11:00"
+            priority: high
+            note: Three sections done; intro and conclusion remain.
+            tone: neutral
+          - block: task-item
+            title: Review pull request #284
+            done: false
+            due: "12:30"
+            priority: normal
+            note: Maya needs feedback before her afternoon ship.
+            tone: neutral
+          - block: task-item
+            title: Call with Jonas — research handoff
+            done: false
+            due: "14:00"
+            priority: normal
+            tone: neutral
+
+    - block: section
+      heading: Done today
+      tone: muted
+      density: compact
+      slots:
+        body:
+          - block: task-item
+            title: Morning walk
+            done: true
+            due: "07:15"
+            priority: low
+            tone: muted
+          - block: task-item
+            title: Clear inbox to zero
+            done: true
+            due: "08:42"
+            priority: normal
+            note: Twelve minutes, faster than usual. Three threads flagged for tomorrow.
+            tone: muted

@@ -1,0 +1,108 @@
+template: dashboard-grid
+
+slots:
+  header:
+    block: page-header
+    eyebrow: Last 7 days
+    title: Archive
+    meta: 9 tasks completed · longest streak this month
+    action:
+      primitive: action
+      label: Export as text
+      intent: secondary
+    tone: neutral
+
+  main:
+    - block: section
+      heading: Tuesday · May 26
+      description: 4 completed.
+      tone: neutral
+      density: compact
+      slots:
+        body:
+          - block: task-item
+            title: Ship v1.4 release notes
+            done: true
+            due: "10:15"
+            priority: normal
+            note: Published to the changelog before the morning standup.
+            tone: muted
+          - block: task-item
+            title: Migrate analytics dashboard
+            done: true
+            due: "13:30"
+            priority: high
+            note: Took two hours — half an hour longer than estimated. Queries running cleanly.
+            tone: muted
+          - block: task-item
+            title: One-on-one with Sam
+            done: true
+            due: "15:00"
+            priority: normal
+            tone: muted
+          - block: task-item
+            title: Reply to compliance email
+            done: true
+            due: "17:20"
+            priority: low
+            tone: muted
+
+    - block: section
+      heading: Monday · May 25
+      description: 2 completed. A long planning block doesn't appear here — planning never logs as a task.
+      tone: muted
+      density: compact
+      slots:
+        body:
+          - block: task-item
+            title: Read Q1 retrospective draft
+            done: true
+            due: "11:00"
+            priority: normal
+            tone: muted
+          - block: task-item
+            title: Onboard new contractor
+            done: true
+            due: "16:45"
+            priority: normal
+            note: Repo access granted, intro call scheduled for Thursday.
+            tone: muted
+
+    - block: section
+      heading: Friday · May 22
+      description: 3 completed. End of last week — wrapped cleanly, weekend started on time.
+      tone: muted
+      density: compact
+      slots:
+        body:
+          - block: task-item
+            title: Finalize engineering hiring loop
+            done: true
+            due: "12:00"
+            priority: high
+            tone: muted
+          - block: task-item
+            title: Lunch with Maya
+            done: true
+            due: "14:00"
+            priority: low
+            note: Not work, but it was on the list — a reminder that protected the time.
+            tone: muted
+          - block: task-item
+            title: Submit expense report
+            done: true
+            due: "16:00"
+            priority: normal
+            tone: muted
+
+  footer:
+    block: cta-bar
+    heading: Nine completed in the last week
+    body: >-
+      A quiet number, by design. focus doesn't reward volume — it reflects
+      what you actually owed yourself.
+    cta:
+      primitive: action
+      label: View by month
+      intent: ghost
+    tone: muted

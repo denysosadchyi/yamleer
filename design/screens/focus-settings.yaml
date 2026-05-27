@@ -2,22 +2,15 @@ template: dashboard-grid
 
 slots:
   header:
-    block: hero-text
+    block: page-header
     title: Settings
-    lead: >-
-      Fewer than you'd expect, on purpose. The defaults reflect how focus
-      was meant to be used — change only what genuinely doesn't fit your
-      day.
+    meta: Fewer than you'd expect, on purpose. Change only what doesn't fit your day.
     tone: neutral
-    density: comfortable
 
   main:
     - block: section
       heading: Account
-      description: >-
-        Email and password live here. Nothing else — focus doesn't ask for
-        a profile photo, a display name, or a timezone you'll forget you
-        set.
+      description: Email and password. Nothing else — no profile photo, no display name, no timezone.
       tone: neutral
       slots:
         body:
@@ -44,18 +37,15 @@ slots:
 
     - block: section
       heading: Preferences
-      description: >-
-        Three toggles and one weekly choice. We considered more and removed
-        them all — each deletion is documented in a public changelog.
+      description: Three toggles and one weekly choice. We considered more and removed them all.
       tone: neutral
       slots:
         body:
           - block: setting-row
             label: Show completed tasks in today view
             description: >-
-              When on, finished tasks remain visible under "Already done"
-              until midnight. When off, they disappear the moment you mark
-              them.
+              When on, finished tasks remain visible under "Done today" until
+              midnight. When off, they disappear the moment you mark them.
             control:
               primitive: toggle
               on: true
@@ -76,9 +66,8 @@ slots:
           - block: setting-row
             label: Hide weekends from archive grouping
             description: >-
-              When on, Saturday and Sunday roll into the adjacent week's
-              view. Useful if you don't work weekends and don't want them
-              visible as gaps.
+              When on, Saturday and Sunday roll into the adjacent week. Useful
+              if you don't work weekends and don't want them visible as gaps.
             control:
               primitive: toggle
               on: false
@@ -98,10 +87,7 @@ slots:
 
     - block: section
       heading: Data
-      description: >-
-        Your tasks are yours. Export them whenever you want, delete the
-        account whenever you want — no retention windows, no cooling-off
-        period.
+      description: Your tasks are yours. Export or delete whenever — no retention windows, no cooling-off period.
       tone: muted
       density: compact
       slots:
@@ -110,8 +96,7 @@ slots:
             label: Export everything
             description: >-
               A single text file with every task, completed or pending,
-              grouped by date. Plain text — readable in any editor, on any
-              device, in any decade.
+              grouped by date. Plain text — readable in any editor.
             control:
               primitive: action
               label: Download archive
@@ -121,8 +106,7 @@ slots:
             label: Delete account
             description: >-
               Removes your tasks, archive, and account from focus servers.
-              Confirmation required. No "win you back" email — if you
-              leave, you leave.
+              Confirmation required. No "win you back" email.
             control:
               primitive: action
               label: Delete permanently
