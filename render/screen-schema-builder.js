@@ -34,14 +34,25 @@ const buildFieldInstanceSchema = (fieldSpec, registerPrimitive) => {
     }
     case 'enum':
       return { enum: [...fieldSpec.values] }
-    case 'ref':
+    case 'ref': {
       if (fieldSpec['ref-kind'] !== 'primitive') {
         throw new Error(
           `field-ref must have ref-kind=primitive, got "${fieldSpec['ref-kind']}"`
         )
       }
-      registerPrimitive(fieldSpec['ref-type'])
-      return { $ref: `#/$defs/primitive-${fieldSpec['ref-type']}` }
+      // ref-type is `string | string[]` after the array-form extension.
+      // Normalize to array, register each primitive, emit single $ref for
+      // length-1 (cheap) or oneOf for length>1 (discriminator: every
+      // primitive-N schema has `primitive: { const: <name> }`, so exactly
+      // one branch matches per instance — same pattern as slot allows).
+      const rawRefType = fieldSpec['ref-type']
+      const refTypes = Array.isArray(rawRefType) ? rawRefType : [rawRefType]
+      for (const t of refTypes) registerPrimitive(t)
+      if (refTypes.length === 1) {
+        return { $ref: `#/$defs/primitive-${refTypes[0]}` }
+      }
+      return { oneOf: refTypes.map(t => ({ $ref: `#/$defs/primitive-${t}` })) }
+    }
     default:
       throw new Error(`Unknown field type: "${fieldSpec.type}"`)
   }
