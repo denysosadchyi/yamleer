@@ -1,6 +1,30 @@
 template: dashboard-grid
 
 slots:
+  sidebar:
+    block: sidebar-nav
+    brand: focus
+    tone: neutral
+    slots:
+      links:
+        - block: nav-link
+          label: Today
+          href: /screens/focus-today.html
+          current: false
+          count: "5"
+          tone: neutral
+        - block: nav-link
+          label: Archive
+          href: /screens/focus-archive.html
+          current: false
+          count: "9"
+          tone: neutral
+        - block: nav-link
+          label: Settings
+          href: /screens/focus-settings.html
+          current: true
+          tone: neutral
+
   header:
     block: page-header
     title: Settings
