@@ -8,29 +8,31 @@ fluid-range:
   to: 1200
 
 style:
-  # Tightened product-grade scale per impeccable product register:
-  # ~1.15 ratio between adjacent steps; near-fixed at desktop viewports.
-  # Display is marketing-only and keeps a wider range.
+  # Things-app-aligned scale: dense body (14px), prominent page title
+  # (28px bold), small caption for meta. heading-sm/md are still
+  # available but rarely used — section labels collapse to caption
+  # at the block-CSS level for Things-style divider feel.
   caption:
-    size: { min: 12, ideal: 13, max: 13 }
-    weight: 400
-    line-height: 1.45
+    size: { min: 11, ideal: 12, max: 12 }
+    weight: 500
+    line-height: 1.4
   body:
-    size: { min: 14, ideal: 15, max: 15 }
+    size: { min: 13, ideal: 14, max: 14 }
     weight: 400
-    line-height: 1.55
+    line-height: 1.5
   heading-sm:
-    size: { min: 15, ideal: 17, max: 17 }
+    size: { min: 14, ideal: 16, max: 16 }
     weight: 600
     line-height: 1.35
   heading-md:
-    size: { min: 18, ideal: 20, max: 20 }
+    size: { min: 17, ideal: 19, max: 19 }
     weight: 600
     line-height: 1.3
   heading-lg:
-    size: { min: 21, ideal: 24, max: 24 }
-    weight: 600
-    line-height: 1.2
+    size: { min: 24, ideal: 28, max: 28 }
+    weight: 700
+    line-height: 1.15
+    letter-spacing: -0.01
   display:
     size: { min: 32, ideal: 48, max: 64 }
     weight: 700

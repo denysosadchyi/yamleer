@@ -123,10 +123,10 @@
   font-size: var(--type-caption-size);
   line-height: var(--type-caption-leading);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 500;
-  opacity: 0.55;
-  margin: 0;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  opacity: 0.5;
+  margin: 0 0 var(--spacing-xs);
 }
 
 [data-block="page-header"] [data-field="title"] {
@@ -177,9 +177,13 @@
 }
 
 [data-block="section"] [data-field="heading"] {
-  font-size: var(--type-heading-md-size);
-  font-weight: 500;
-  line-height: var(--type-heading-md-leading);
+  font-size: var(--type-caption-size);
+  font-weight: 600;
+  line-height: var(--type-caption-leading);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.5;
+  margin-bottom: var(--spacing-xs);
 }
 
 [data-block="section"] [data-field="description"] {
@@ -427,10 +431,10 @@
 [data-block="task-item"] [data-field="due"] {
   grid-column: 3;
   grid-row: 1;
-  font-size: var(--type-caption-size);
-  line-height: var(--type-caption-leading);
-  font-family: var(--font-mono);
-  opacity: 0.6;
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.5;
   white-space: nowrap;
 }
 
