@@ -37,6 +37,23 @@ Mapping for the current four blocks:
 - `structural` blocks MUST have `slots`.
 - `atomic` and `leaf` blocks MUST NOT have `slots`.
 
+## Two-level role validation
+
+Role rules split across two enforcement layers by **what context they need**:
+
+1. **Schema-level** (block.yaml is self-contained):
+   `role: structural` ⟺ `slots` is present and non-empty.
+   `role: atomic | leaf` ⟹ `slots` is absent.
+   Checked by AJV at `load-schemas` time. Fails fast at block authoring.
+
+2. **Walker-level** (screen.yaml read in context of template + block roles):
+   Template `allows` contains only `leaf | structural` blocks.
+   Structural-block `slots.<x>.allows` contains only `atomic` blocks.
+   Checked post-validation, catches composition errors at screen authoring.
+
+Schema validates **internal consistency of a block**; walker validates
+**correctness of where the block is placed**. The two layers do not overlap.
+
 ## What the post-validation walker enforces (Etap 3.3)
 
 The schema cannot reach across files to check role-vs-role composition. A
