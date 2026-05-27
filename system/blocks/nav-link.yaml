@@ -1,0 +1,23 @@
+type: nav-link
+description: Single sidebar navigation row — label, optional count, current-flag
+role: atomic
+
+fields:
+  label:
+    type: string
+    required: true
+    max-length: 24
+  href:
+    type: string
+    required: false
+    max-length: 100
+  current:
+    type: boolean
+    required: true
+  count:
+    type: string
+    required: false
+    max-length: 6
+
+variants:
+  tone: { tokenRef: tone }

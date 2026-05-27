@@ -1,8 +1,12 @@
 type: dashboard-grid
-description: Slotted multi-zone layout — header, main, optional footer
+description: Slotted multi-zone layout — optional sidebar, header, main, optional footer
 
 mode: slotted
 slots:
+  sidebar:
+    allows: [sidebar-nav]
+    cardinality: one
+    required: false
   header:
     allows: [hero-text, page-header]
     cardinality: one

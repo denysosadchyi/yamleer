@@ -27,6 +27,28 @@
   container-type: inline-size;
 }
 
+/* dashboard-grid layout: single-column when no sidebar, two-column
+   app-shell when sidebar is present. Content always lives in
+   [data-slot="content"] so the sidebar is a sibling, not a child. */
+[data-template="dashboard-grid"][data-has-sidebar="true"] {
+  display: grid;
+  grid-template-columns: 232px 1fr;
+  min-height: 100vh;
+  background: var(--color-canvas);
+}
+
+[data-template="dashboard-grid"][data-has-sidebar="true"] [data-slot="content"] {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+[data-template="dashboard-grid"][data-has-sidebar="true"] [data-slot="sidebar"] {
+  background: var(--color-surface-muted);
+  border-right: 1px solid var(--color-border-subtle);
+  padding: var(--spacing-lg) 0;
+}
+
 /* ===== Block frame defaults ===== */
 /* Every block gets a container-query scope and the neutral tone-set as
    default role values. Specific blocks set background/padding/borders
@@ -457,8 +479,17 @@
   opacity: 0.85;
 }
 
-[data-block="task-item"][data-priority="high"] {
-  box-shadow: inset 1.5px 0 0 var(--color-text-danger);
+/* High-priority indicator: small red dot before the title, not a side
+   stripe. Matches Things-style flag placement and respects the shared
+   design law against side-stripe borders. */
+[data-block="task-item"][data-priority="high"] [data-field="title"]::before {
+  content: "●";
+  display: inline-block;
+  color: var(--color-text-danger);
+  font-size: 0.5em;
+  vertical-align: middle;
+  margin-right: 0.45rem;
+  transform: translateY(-1px);
 }
 
 [data-block="task-item"]:hover {
@@ -658,4 +689,81 @@
   opacity: 0.55;
   cursor: not-allowed;
   background: var(--color-surface-muted);
+}
+
+/* ===== Block: sidebar-nav ===== */
+/* Left rail. Brand line sits at top; links stack below.
+   Lives in dashboard-grid.sidebar slot only. */
+
+[data-block="sidebar-nav"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  height: 100%;
+}
+
+[data-block="sidebar-nav"] [data-field="brand"] {
+  padding: 0 var(--spacing-md) 0 var(--spacing-lg);
+  font-size: var(--type-body-size);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+[data-block="sidebar-nav"] [data-field="links"] {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ===== Block: nav-link ===== */
+/* Single sidebar row. data-current="true" highlights active page. */
+
+[data-block="nav-link"] {
+  display: block;
+}
+
+[data-block="nav-link"] [data-field="link"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  font-weight: 500;
+  transition: background-color 120ms ease-out, color 120ms ease-out;
+}
+
+[data-block="nav-link"] [data-field="link"]:hover {
+  background: var(--color-surface-neutral);
+  color: var(--color-text-primary);
+}
+
+[data-block="nav-link"][data-current="true"] [data-field="link"] {
+  background: var(--color-brand-primary);
+  color: var(--color-text-inverse);
+}
+
+[data-block="nav-link"][data-current="true"] [data-field="link"]:hover {
+  background: var(--color-brand-primary);
+  color: var(--color-text-inverse);
+  filter: brightness(1.05);
+}
+
+[data-block="nav-link"] [data-field="label"] {
+  flex: 1 1 auto;
+}
+
+[data-block="nav-link"] [data-field="count"] {
+  font-size: var(--type-caption-size);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
 }

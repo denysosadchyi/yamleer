@@ -31,6 +31,14 @@ const indent = (s, spaces) =>
 
 export const templates = {
   'dashboard-grid': (screen, ctx) => {
+    // sidebar: cardinality one (optional) → object or undefined
+    const sidebarHtml = screen.slots.sidebar
+      ? `
+  <aside data-slot="sidebar">
+${indent(ctx.renderBlock(screen.slots.sidebar), 4)}
+  </aside>`
+      : ''
+
     // header: cardinality one (required) → single block object
     const headerHtml = indent(ctx.renderBlock(screen.slots.header), 4)
 
@@ -42,18 +50,25 @@ export const templates = {
     // footer: cardinality one (optional) → object or undefined
     const footerHtml = screen.slots.footer
       ? `
-  <footer data-slot="footer">
-${indent(ctx.renderBlock(screen.slots.footer), 4)}
-  </footer>`
+    <footer data-slot="footer">
+${indent(ctx.renderBlock(screen.slots.footer), 6)}
+    </footer>`
       : ''
 
-    return `<main data-template="dashboard-grid">
-  <header data-slot="header">
-${headerHtml}
-  </header>
-  <section data-slot="main">
-${mainHtml}
-  </section>${footerHtml}
+    // data-has-sidebar lets CSS switch between single-column (no sidebar)
+    // and two-column app-shell layouts. Content (header+main+footer)
+    // stays nested in [data-slot="content"] so the sidebar lives as its
+    // sibling rather than being injected mid-flow.
+    const hasSidebar = !!screen.slots.sidebar
+    return `<main data-template="dashboard-grid" data-has-sidebar="${hasSidebar}">${sidebarHtml}
+  <div data-slot="content">
+    <header data-slot="header">
+${indent(ctx.renderBlock(screen.slots.header), 6)}
+    </header>
+    <section data-slot="main">
+${screen.slots.main.map((b) => indent(ctx.renderBlock(b), 6)).join('\n')}
+    </section>${footerHtml}
+  </div>
 </main>`
   },
 

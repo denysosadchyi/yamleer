@@ -1,0 +1,19 @@
+type: sidebar-nav
+description: Left rail with brand line + stacked navigation links
+role: structural
+
+fields:
+  brand:
+    type: string
+    required: false
+    max-length: 24
+
+slots:
+  links:
+    allows: [nav-link]
+    cardinality: many
+    required: true
+    min: 1
+
+variants:
+  tone: { tokenRef: tone }

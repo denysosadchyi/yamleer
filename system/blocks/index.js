@@ -95,6 +95,39 @@ export const blocks = {
 </article>`
   },
 
+  // Sidebar-nav — structural block hosting brand + a list of nav-link
+  // atomic blocks. Lives in the new dashboard-grid.sidebar slot.
+  'sidebar-nav': (data, ctx) => {
+    const tone = escape(data.tone ?? 'neutral')
+    const brandFrag = data.brand
+      ? `\n  <p data-field="brand">${escape(data.brand)}</p>`
+      : ''
+    const linksItems = (data.slots?.links ?? [])
+      .map((b) => ctx.renderBlock(b))
+      .map((html) => html.split('\n').map((line) => `    ${line}`).join('\n'))
+      .join('\n')
+    const linksFrag = linksItems ? `\n${linksItems}\n  ` : ''
+    return `<nav data-block="sidebar-nav" data-tone="${tone}">${brandFrag}
+  <ul data-field="links">${linksFrag}</ul>
+</nav>`
+  },
+
+  // Nav-link — single sidebar row. atomic, lives in sidebar-nav.links.
+  // Rendered as <li> with anchor when href provided, plain span when not.
+  // data-current="true" lets CSS highlight the active page.
+  'nav-link': (data, ctx) => {
+    const tone = escape(data.tone ?? 'neutral')
+    const current = data.current === true
+    const label = escape(data.label)
+    const countFrag = data.count
+      ? `<span data-field="count">${escape(data.count)}</span>`
+      : ''
+    const inner = data.href
+      ? `<a href="${escape(data.href)}" data-field="link"><span data-field="label">${label}</span>${countFrag}</a>`
+      : `<span data-field="link"><span data-field="label">${label}</span>${countFrag}</span>`
+    return `<li data-block="nav-link" data-tone="${tone}" data-current="${current}">${inner}</li>`
+  },
+
   // Page-header — app chrome header (replaces hero-text for product
   // screens). Title is large but not display-grade; optional eyebrow sits
   // above it for context ("Today" / "Archive"); optional meta sits below;
