@@ -36,4 +36,18 @@ export const primitives = {
     const sizeAttr = data.size ? ` data-size="${escape(data.size)}"` : ''
     return `<span data-primitive="icon" data-name="${name}"${sizeAttr} aria-hidden="true"></span>`
   },
+
+  // Toggle — two-state on/off control rendered as <button> with
+  // aria-pressed (the standard accessible toggle pattern, not a checkbox).
+  // `state` is design-time only: 'focused' simulates the :focus ring for
+  // storyboard demonstration; 'disabled' also writes the HTML disabled
+  // attribute. Runtime focus continues to work via :focus pseudo-class.
+  toggle: (data, _ctx) => {
+    const on = data.on === true
+    const name = escape(data.name)
+    const ariaLabel = escape(data['aria-label'])
+    const state = escape(data.state ?? 'default')
+    const disabledAttr = state === 'disabled' ? ' disabled' : ''
+    return `<button type="button" data-primitive="toggle" data-on="${on}" data-state="${state}" name="${name}" aria-label="${ariaLabel}" aria-pressed="${on}"${disabledAttr}></button>`
+  },
 }

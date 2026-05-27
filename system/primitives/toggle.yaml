@@ -1,0 +1,19 @@
+type: toggle
+description: Two-state on/off control — button semantics, aria-pressed for state
+
+fields:
+  on:
+    type: boolean
+    required: true
+  name:
+    type: string
+    required: true
+    max-length: 60
+  aria-label:
+    type: string
+    required: true
+    max-length: 80
+  state:
+    type: enum
+    values: [default, focused, disabled]
+    required: false
