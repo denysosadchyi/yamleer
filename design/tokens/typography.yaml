@@ -3,21 +3,33 @@ family:
   serif: "Georgia, 'Times New Roman', serif"
   mono: "ui-monospace, 'SF Mono', Menlo, monospace"
 
-size:
-  caption: "clamp(0.78rem, 0.74rem + 0.2vw, 0.88rem)"
-  body: "clamp(0.95rem, 0.9rem + 0.3vw, 1.05rem)"
-  heading-sm: "clamp(1.1rem, 1rem + 0.5vw, 1.3rem)"
-  heading-md: "clamp(1.4rem, 1.2rem + 1vw, 1.8rem)"
-  heading-lg: "clamp(1.8rem, 1.5rem + 1.5vw, 2.5rem)"
-  display: "clamp(2.4rem, 1.9rem + 2.8vw, 4rem)"
+fluid-range:
+  from: 320
+  to: 1200
 
-weight:
-  regular: 400
-  medium: 500
-  semibold: 600
-  bold: 700
-
-line-height:
-  tight: 1.15
-  normal: 1.5
-  relaxed: 1.7
+style:
+  caption:
+    size: { min: 12, ideal: 13, max: 14 }
+    weight: 400
+    line-height: 1.45
+  body:
+    size: { min: 15, ideal: 16, max: 17 }
+    weight: 400
+    line-height: 1.55
+  heading-sm:
+    size: { min: 18, ideal: 20, max: 22 }
+    weight: 600
+    line-height: 1.35
+  heading-md:
+    size: { min: 22, ideal: 26, max: 30 }
+    weight: 600
+    line-height: 1.25
+  heading-lg:
+    size: { min: 28, ideal: 36, max: 42 }
+    weight: 700
+    line-height: 1.15
+  display:
+    size: { min: 38, ideal: 56, max: 72 }
+    weight: 700
+    line-height: 1.05
+    letter-spacing: -0.02
