@@ -1,0 +1,78 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "yamleer://template.schema.yaml"
+
+type: object
+required: [type, description, mode]
+properties:
+  type: { $ref: "#/$defs/identifier" }
+  description: { type: string, minLength: 1 }
+  mode: { type: string, enum: [slotted, sequence] }
+
+  # slotted mode shape
+  slots:
+    type: object
+    propertyNames: { $ref: "#/$defs/identifier" }
+    additionalProperties: { $ref: "#/$defs/slot-spec" }
+    minProperties: 1
+
+  # sequence mode shape
+  allows:
+    type: array
+    items:
+      type: string
+      # enum populated at load-time with block names
+    minItems: 1
+    uniqueItems: true
+  min-blocks: { type: integer, minimum: 0 }
+  max-blocks: { type: integer, minimum: 1 }
+
+allOf:
+  - if:
+      properties:
+        mode: { const: slotted }
+      required: [mode]
+    then:
+      required: [slots]
+      properties:
+        allows: false
+        min-blocks: false
+        max-blocks: false
+    else:
+      required: [allows]
+      properties:
+        slots: false
+
+unevaluatedProperties: false
+
+$defs:
+  identifier:
+    type: string
+    pattern: "^[a-z][a-z0-9-]*$"
+
+  slot-spec:
+    type: object
+    required: [allows, cardinality]
+    properties:
+      allows:
+        type: array
+        items:
+          type: string
+          # enum populated at load-time with block names
+        minItems: 1
+        uniqueItems: true
+      cardinality: { type: string, enum: [one, many] }
+      required: { type: boolean }
+    allOf:
+      - if:
+          properties:
+            cardinality: { const: many }
+          required: [cardinality]
+        then:
+          properties:
+            min: { type: integer, minimum: 0 }
+            max: { type: integer, minimum: 1 }
+        else:
+          properties:
+            min: false
+            max: false
+    unevaluatedProperties: false

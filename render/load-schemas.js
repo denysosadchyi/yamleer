@@ -95,3 +95,19 @@ export const buildBlockValidator = (ajv) => {
 
   return ajv.compile(schema)
 }
+
+export const buildTemplateValidator = (ajv) => {
+  const schema = loadSchema('template')
+  const blocks = loadDictionary('system/blocks')
+  const blockNames = Object.keys(blocks).sort()
+
+  schema.properties.allows.items.enum = blockNames
+  schema.$defs['slot-spec'].properties.allows.items.enum = blockNames
+
+  requireArray('template.allows.items.enum',
+    schema.properties.allows.items.enum)
+  requireArray('template.slot-spec.allows.items.enum',
+    schema.$defs['slot-spec'].properties.allows.items.enum)
+
+  return ajv.compile(schema)
+}

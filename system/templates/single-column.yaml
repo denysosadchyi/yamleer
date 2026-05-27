@@ -1,0 +1,6 @@
+type: single-column
+description: Linear top-to-bottom flow — structural blocks in sequence
+
+mode: sequence
+allows: [hero-text, section, cta-bar]
+min-blocks: 1
