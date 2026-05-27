@@ -307,3 +307,63 @@
 [data-primitive="icon"][data-size="sm"] { font-size: 0.65em; }
 [data-primitive="icon"][data-size="md"] { font-size: 0.75em; }
 [data-primitive="icon"][data-size="lg"] { font-size: 0.95em; }
+
+/* Toggle — two-state switch (button + pseudo-element knob). data-on
+   drives the visual; data-state is design-time only (focused / disabled
+   mockups in storyboard); :focus-visible handles real runtime focus. */
+
+[data-primitive="toggle"] {
+  --toggle-track-w: 2.5rem;
+  --toggle-track-h: 1.35rem;
+  --toggle-knob-d: 1.05rem;
+  --toggle-pad: 0.15rem;
+
+  position: relative;
+  display: inline-block;
+  width: var(--toggle-track-w);
+  height: var(--toggle-track-h);
+  padding: 0;
+  border: 1px solid var(--role-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-muted);
+  cursor: pointer;
+  vertical-align: middle;
+  transition: background-color 120ms ease-out, border-color 120ms ease-out;
+  flex-shrink: 0;
+}
+
+[data-primitive="toggle"]::before {
+  content: "";
+  position: absolute;
+  top: var(--toggle-pad);
+  left: var(--toggle-pad);
+  width: var(--toggle-knob-d);
+  height: var(--toggle-knob-d);
+  border-radius: var(--radius-pill);
+  background: var(--color-text-inverse);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.18);
+  transition: transform 120ms ease-out;
+}
+
+[data-primitive="toggle"][data-on="true"] {
+  background: var(--role-primary);
+  border-color: var(--role-primary);
+}
+
+[data-primitive="toggle"][data-on="true"]::before {
+  transform: translateX(
+    calc(var(--toggle-track-w) - var(--toggle-knob-d) - (var(--toggle-pad) * 2) - 2px)
+  );
+}
+
+[data-primitive="toggle"]:focus-visible,
+[data-primitive="toggle"][data-state="focused"] {
+  outline: 2px solid var(--role-accent);
+  outline-offset: 2px;
+}
+
+[data-primitive="toggle"][data-state="disabled"],
+[data-primitive="toggle"]:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
