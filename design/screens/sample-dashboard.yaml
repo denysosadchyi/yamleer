@@ -1,0 +1,94 @@
+template: dashboard-grid
+
+slots:
+  header:
+    block: hero-text
+    title: "Operational visibility for fleets that can't afford blind spots"
+    lead: >-
+      Harbor unifies vessel telemetry, crew schedules, and compliance records
+      into one workspace your operations team actually wants to open every
+      morning — without the spreadsheet sprawl that came before it.
+    cta:
+      primitive: action
+      label: Schedule a demo
+      intent: primary
+    tone: emphasis
+    density: comfortable
+
+  main:
+    - block: section
+      heading: Fleet visibility
+      description: >-
+        Real-time signal across the vessels, routes, and consumables your team
+        manages day to day.
+      tone: neutral
+      density: comfortable
+      slots:
+        body:
+          - block: card
+            heading: Vessel position tracking
+            body: >-
+              Live AIS feed for every hull, fused with crew check-ins and
+              weather overlays to surface anomalies before they reach the
+              bridge.
+            icon: { primitive: icon, name: anchor, size: md }
+            cta: { primitive: action, label: Open map view, intent: secondary }
+            tone: neutral
+          - block: card
+            heading: Route optimization
+            body: >-
+              Compare planned, predicted, and actual paths. Set fuel and ETA
+              targets per voyage, then track variance against the day's
+              weather.
+            icon: { primitive: icon, name: route }
+            cta: { primitive: action, label: Plan a route, intent: secondary }
+            tone: neutral
+          - block: card
+            heading: Fuel monitoring
+            body: >-
+              Consumption telemetry per engine, paired with bunker logs.
+              Catch silent leaks and over-burn before the monthly
+              reconciliation.
+            icon: { primitive: icon, name: fuel-gauge, size: lg }
+            cta: { primitive: action, label: View consumption, intent: secondary }
+            tone: neutral
+
+    - block: section
+      heading: Operations
+      description: >-
+        Compliance, crew, and documentation kept in lockstep with the assets
+        they belong to.
+      tone: muted
+      density: compact
+      slots:
+        body:
+          - block: card
+            heading: "Compliance & certificates"
+            body: >-
+              Track every certificate, renewal, and audit cycle against the
+              vessels and crew they apply to. Get warned before something
+              lapses.
+            icon: { primitive: icon, name: shield }
+            cta: { primitive: action, label: Audit log, intent: ghost }
+            tone: neutral
+          - block: card
+            heading: Crew management
+            body: >-
+              Rotations, contracts, training records, and shore leave —
+              visible to the people who plan them, locked down for everyone
+              else.
+            icon: { primitive: icon, name: team }
+            cta: { primitive: action, label: Crew register, intent: ghost }
+            tone: neutral
+
+  footer:
+    block: cta-bar
+    heading: Ready to put your fleet on one screen?
+    body: >-
+      Talk to our team — we'll show you how Harbor fits the boats you
+      actually run, not a demo fleet.
+    cta:
+      primitive: action
+      label: Book a fleet walkthrough
+      intent: primary
+    tone: emphasis
