@@ -8,6 +8,7 @@ import {
   buildPrimitiveValidator,
   buildBlockValidator,
   buildTemplateValidator,
+  buildScreenValidator,
 } from './load-schemas.js'
 
 const usage = (code = 2) => {
@@ -40,6 +41,7 @@ const pickSchema = () => {
   if (relPath.match(/^system\/primitives\/[^/]+\.yaml$/)) return { kind: 'primitive' }
   if (relPath.match(/^system\/blocks\/[^/]+\.yaml$/)) return { kind: 'block' }
   if (relPath.match(/^system\/templates\/[^/]+\.yaml$/)) return { kind: 'template' }
+  if (relPath.match(/^design\/screens\/[^/]+\.yaml$/)) return { kind: 'screen' }
   return null
 }
 
@@ -51,6 +53,7 @@ if (!spec) {
 }
 
 const ajv = new Ajv({ allErrors: true, strict: false })
+const data = yaml.load(readFileSync(absPath, 'utf8'))
 
 let validator
 let label
@@ -72,13 +75,24 @@ if (spec.kind === 'tokens') {
 } else if (spec.kind === 'template') {
   validator = buildTemplateValidator(ajv)
   label = spec.kind
+} else if (spec.kind === 'screen') {
+  if (!data || typeof data.template !== 'string') {
+    console.error('Screen YAML must declare top-level "template": <string>.')
+    process.exit(2)
+  }
+  try {
+    validator = buildScreenValidator(ajv, data.template)
+    label = `screen[${data.template}]`
+  } catch (e) {
+    console.error(`FAIL  ${relPath}  cannot build screen validator: ${e.message}`)
+    process.exit(2)
+  }
 } else {
   console.error(`Schema kind "${spec.kind}" not wired yet.`)
-  console.error('Wired: tokens.{colors,spacing,typography,radius,roles}, primitive, block, template.')
+  console.error('Wired: tokens.{colors,spacing,typography,radius,roles}, primitive, block, template, screen.')
   process.exit(2)
 }
 
-const data = yaml.load(readFileSync(absPath, 'utf8'))
 const ok = validator(data)
 
 if (ok) {

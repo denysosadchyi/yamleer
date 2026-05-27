@@ -111,3 +111,22 @@ export const buildTemplateValidator = (ajv) => {
 
   return ajv.compile(schema)
 }
+
+import { buildScreenSchema } from './screen-schema-builder.js'
+
+const screenValidatorCache = new Map()
+
+export const buildScreenValidator = (ajv, templateName) => {
+  if (screenValidatorCache.has(templateName)) {
+    return screenValidatorCache.get(templateName)
+  }
+
+  const templates = loadDictionary('system/templates')
+  const blocks = loadDictionary('system/blocks')
+  const primitives = loadDictionary('system/primitives')
+
+  const schema = buildScreenSchema(templateName, templates, blocks, primitives)
+  const validator = ajv.compile(schema)
+  screenValidatorCache.set(templateName, validator)
+  return validator
+}
