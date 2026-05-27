@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-27T12:50:00.000Z",
+  "title": "Design System: focus",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "oklch(99% 0.003 250)",
+        "tonalRamp": [
+          "oklch(15% 0.003 250)",
+          "oklch(25% 0.003 250)",
+          "oklch(40% 0.003 250)",
+          "oklch(55% 0.003 250)",
+          "oklch(70% 0.003 250)",
+          "oklch(85% 0.003 250)",
+          "oklch(94% 0.003 250)",
+          "oklch(99% 0.003 250)"
+        ]
+      },
+      "paper-warm": {
+        "role": "neutral",
+        "displayName": "Paper Warm",
+        "canonical": "oklch(96% 0.005 250)",
+        "tonalRamp": [
+          "oklch(15% 0.005 250)",
+          "oklch(25% 0.005 250)",
+          "oklch(40% 0.005 250)",
+          "oklch(55% 0.005 250)",
+          "oklch(70% 0.005 250)",
+          "oklch(85% 0.005 250)",
+          "oklch(92% 0.005 250)",
+          "oklch(96% 0.005 250)"
+        ]
+      },
+      "page-canvas": {
+        "role": "neutral",
+        "displayName": "Page Canvas",
+        "canonical": "oklch(94% 0.005 250)",
+        "tonalRamp": [
+          "oklch(15% 0.005 250)",
+          "oklch(25% 0.005 250)",
+          "oklch(40% 0.005 250)",
+          "oklch(55% 0.005 250)",
+          "oklch(70% 0.005 250)",
+          "oklch(82% 0.005 250)",
+          "oklch(88% 0.005 250)",
+          "oklch(94% 0.005 250)"
+        ]
+      },
+      "deep-indigo": {
+        "role": "neutral",
+        "displayName": "Deep Indigo",
+        "canonical": "oklch(23% 0.04 250)",
+        "tonalRamp": [
+          "oklch(15% 0.04 250)",
+          "oklch(23% 0.04 250)",
+          "oklch(33% 0.04 250)",
+          "oklch(45% 0.04 250)",
+          "oklch(58% 0.04 250)",
+          "oklch(72% 0.03 250)",
+          "oklch(85% 0.02 250)",
+          "oklch(95% 0.005 250)"
+        ]
+      },
+      "ink-primary": {
+        "role": "neutral",
+        "displayName": "Ink Primary",
+        "canonical": "oklch(18% 0.01 250)",
+        "tonalRamp": [
+          "oklch(10% 0.01 250)",
+          "oklch(18% 0.01 250)",
+          "oklch(28% 0.01 250)",
+          "oklch(42% 0.01 250)",
+          "oklch(56% 0.01 250)",
+          "oklch(70% 0.01 250)",
+          "oklch(82% 0.01 250)",
+          "oklch(95% 0.005 250)"
+        ]
+      },
+      "ink-secondary": {
+        "role": "neutral",
+        "displayName": "Ink Secondary",
+        "canonical": "oklch(45% 0.015 250)",
+        "tonalRamp": [
+          "oklch(15% 0.015 250)",
+          "oklch(25% 0.015 250)",
+          "oklch(35% 0.015 250)",
+          "oklch(45% 0.015 250)",
+          "oklch(58% 0.015 250)",
+          "oklch(72% 0.015 250)",
+          "oklch(85% 0.01 250)",
+          "oklch(95% 0.005 250)"
+        ]
+      },
+      "rule-subtle": {
+        "role": "neutral",
+        "displayName": "Rule Subtle",
+        "canonical": "oklch(92% 0.005 250)",
+        "tonalRamp": [
+          "oklch(20% 0.005 250)",
+          "oklch(35% 0.005 250)",
+          "oklch(50% 0.005 250)",
+          "oklch(65% 0.005 250)",
+          "oklch(78% 0.005 250)",
+          "oklch(86% 0.005 250)",
+          "oklch(92% 0.005 250)",
+          "oklch(97% 0.003 250)"
+        ]
+      },
+      "accent-blue": {
+        "role": "primary",
+        "displayName": "Accent Blue",
+        "canonical": "oklch(52% 0.16 250)",
+        "tonalRamp": [
+          "oklch(20% 0.10 250)",
+          "oklch(30% 0.12 250)",
+          "oklch(40% 0.14 250)",
+          "oklch(52% 0.16 250)",
+          "oklch(63% 0.15 250)",
+          "oklch(74% 0.12 250)",
+          "oklch(85% 0.08 250)",
+          "oklch(96% 0.02 250)"
+        ]
+      },
+      "accent-amber": {
+        "role": "secondary",
+        "displayName": "Accent Amber",
+        "canonical": "oklch(70% 0.18 60)",
+        "tonalRamp": [
+          "oklch(25% 0.10 60)",
+          "oklch(38% 0.13 60)",
+          "oklch(50% 0.16 60)",
+          "oklch(60% 0.17 60)",
+          "oklch(70% 0.18 60)",
+          "oklch(80% 0.15 60)",
+          "oklch(88% 0.10 60)",
+          "oklch(96% 0.03 60)"
+        ]
+      },
+      "surface-danger": {
+        "role": "tertiary",
+        "displayName": "Surface Danger",
+        "canonical": "oklch(96% 0.03 25)",
+        "tonalRamp": [
+          "oklch(20% 0.10 25)",
+          "oklch(35% 0.15 25)",
+          "oklch(50% 0.18 25)",
+          "oklch(62% 0.16 25)",
+          "oklch(75% 0.12 25)",
+          "oklch(85% 0.08 25)",
+          "oklch(92% 0.05 25)",
+          "oklch(96% 0.03 25)"
+        ]
+      },
+      "text-danger": {
+        "role": "tertiary",
+        "displayName": "Text Danger",
+        "canonical": "oklch(40% 0.18 25)",
+        "tonalRamp": [
+          "oklch(20% 0.12 25)",
+          "oklch(30% 0.15 25)",
+          "oklch(40% 0.18 25)",
+          "oklch(52% 0.18 25)",
+          "oklch(65% 0.16 25)",
+          "oklch(78% 0.12 25)",
+          "oklch(88% 0.08 25)",
+          "oklch(96% 0.03 25)"
+        ]
+      },
+      "border-danger": {
+        "role": "tertiary",
+        "displayName": "Border Danger",
+        "canonical": "oklch(70% 0.15 25)",
+        "tonalRamp": [
+          "oklch(25% 0.10 25)",
+          "oklch(38% 0.13 25)",
+          "oklch(50% 0.15 25)",
+          "oklch(60% 0.16 25)",
+          "oklch(70% 0.15 25)",
+          "oklch(80% 0.12 25)",
+          "oklch(88% 0.08 25)",
+          "oklch(96% 0.03 25)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Reserved for future marketing-grade pages outside the product surface. No current consumer."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "page-header.title only. One per screen."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "section.heading and cta-bar.heading. Group identity within a page."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All prose, task titles, setting labels. Max 60ch line length."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Eyebrow on page-header (uppercase, tracking 0.08em, opacity 0.55), task-item due (mono), task-item note."
+      }
+    },
+    "shadows": [
+      {
+        "name": "toggle-knob-depth",
+        "value": "0 1px 2px rgb(0 0 0 / 0.18)",
+        "purpose": "Component-level only. Lifts the toggle knob off its track so movement reads physically. The only shadow in the system."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-state",
+        "value": "ease-out",
+        "purpose": "All state transitions (toggle slide, button hover, input focus ring). 120ms duration."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "setting-row-stack",
+        "value": "500px",
+        "purpose": "Container query: setting-row collapses from two-column to single-column stack below this width."
+      },
+      {
+        "name": "cta-bar-row",
+        "value": "600px",
+        "purpose": "Container query: cta-bar switches from stacked to two-column row (heading+body left, action right) at or above this width."
+      },
+      {
+        "name": "storyboard-frame",
+        "value": "1366px",
+        "purpose": "Storyboard frame width. Every screen renders at this width inside dist/storyboard.html so authors verify design at canonical desktop viewport."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Action Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Page-level primary call. Used once per screen at most.",
+      "html": "<button class=\"ds-btn-primary\">+ Add task</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid oklch(52% 0.16 250); background: oklch(52% 0.16 250); color: oklch(99% 0.003 250); font: inherit; font-weight: 500; cursor: pointer; transition: filter 120ms ease-out; } .ds-btn-primary:hover { filter: brightness(1.08); } .ds-btn-primary:active { filter: brightness(0.92); } .ds-btn-primary:focus-visible { outline: 2px solid oklch(70% 0.18 60); outline-offset: 2px; }"
+    },
+    {
+      "name": "Action Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Non-decisive actions: Change email, Export as text, Restore to today.",
+      "html": "<button class=\"ds-btn-secondary\">Change email</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid oklch(92% 0.005 250); background: transparent; color: oklch(18% 0.01 250); font: inherit; font-weight: 500; cursor: pointer; transition: filter 120ms ease-out; } .ds-btn-secondary:hover { filter: brightness(1.08); } .ds-btn-secondary:focus-visible { outline: 2px solid oklch(70% 0.18 60); outline-offset: 2px; }"
+    },
+    {
+      "name": "Action Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Tertiary calls: Change to Sunday, Delete permanently (note: destructive currently borrows ghost; gap 8).",
+      "html": "<button class=\"ds-btn-ghost\">Delete permanently</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; padding: 0; border: 1px solid transparent; background: transparent; color: oklch(18% 0.01 250); font: inherit; font-weight: 500; text-decoration: underline; text-decoration-thickness: 0.05em; text-underline-offset: 0.2em; cursor: pointer; transition: filter 120ms ease-out; } .ds-btn-ghost:hover { filter: brightness(1.08); }"
+    },
+    {
+      "name": "Toggle (off)",
+      "kind": "input",
+      "refersTo": "toggle-off",
+      "description": "Default off state. Used in setting-row.control for boolean preferences.",
+      "html": "<button class=\"ds-toggle\" aria-pressed=\"false\" aria-label=\"Enable notifications\"></button>",
+      "css": ".ds-toggle { position: relative; display: inline-block; width: 2.5rem; height: 1.35rem; padding: 0; border: 1px solid oklch(92% 0.005 250); border-radius: 999px; background: oklch(96% 0.005 250); cursor: pointer; transition: background-color 120ms ease-out, border-color 120ms ease-out; } .ds-toggle::before { content: ''; position: absolute; top: 0.15rem; left: 0.15rem; width: 1.05rem; height: 1.05rem; border-radius: 999px; background: oklch(99% 0.003 250); box-shadow: 0 1px 2px rgb(0 0 0 / 0.18); transition: transform 120ms ease-out; } .ds-toggle[aria-pressed=\"true\"] { background: oklch(52% 0.16 250); border-color: oklch(52% 0.16 250); } .ds-toggle[aria-pressed=\"true\"]::before { transform: translateX(1.05rem); } .ds-toggle:focus-visible { outline: 2px solid oklch(70% 0.18 60); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "text-input",
+      "description": "Inline data-entry. Placeholder visible, focus ring amber.",
+      "html": "<input type=\"search\" class=\"ds-text-input\" placeholder=\"Search tasks…\" aria-label=\"Search tasks\">",
+      "css": ".ds-text-input { display: inline-block; box-sizing: border-box; min-width: 16rem; padding: 0.5rem 1rem; border: 1px solid oklch(92% 0.005 250); border-radius: 0.5rem; background: oklch(99% 0.003 250); color: oklch(18% 0.01 250); font: inherit; font-size: 1rem; line-height: 1.55; transition: border-color 120ms ease-out, box-shadow 120ms ease-out; } .ds-text-input::placeholder { color: oklch(18% 0.01 250); opacity: 0.45; } .ds-text-input:focus-visible { outline: none; border-color: oklch(70% 0.18 60); box-shadow: 0 0 0 3px oklch(70% 0.18 60 / 0.18); }"
+    },
+    {
+      "name": "Task Item (pending)",
+      "kind": "custom",
+      "refersTo": "task-item",
+      "description": "Single task row. Custom checkbox on the left, title dominant, due-time mono right-aligned, optional note below.",
+      "html": "<article class=\"ds-task-item\" data-done=\"false\"><button class=\"ds-task-checkbox\" aria-pressed=\"false\" aria-label=\"Mark complete: Draft Q2 strategy memo\"></button><h3 class=\"ds-task-title\">Draft Q2 strategy memo</h3><span class=\"ds-task-due\">11:00</span><p class=\"ds-task-note\">Three sections done; intro and conclusion remain.</p></article>",
+      "css": ".ds-task-item { display: grid; grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; column-gap: 1rem; row-gap: 0.25rem; align-items: baseline; padding: 1rem 1.5rem; border-top: 1px solid oklch(92% 0.005 250); background: oklch(99% 0.003 250); color: oklch(18% 0.01 250); } .ds-task-checkbox { grid-column: 1; grid-row: 1; width: 1.1rem; height: 1.1rem; padding: 0; border: 1.5px solid oklch(92% 0.005 250); border-radius: 999px; background: transparent; cursor: pointer; align-self: center; transition: background-color 120ms ease-out, border-color 120ms ease-out; } .ds-task-checkbox:hover { border-color: oklch(18% 0.01 250); } .ds-task-checkbox:focus-visible { outline: 2px solid oklch(70% 0.18 60); outline-offset: 2px; } .ds-task-title { grid-column: 2; grid-row: 1; font: inherit; font-size: 1rem; line-height: 1.55; font-weight: 500; margin: 0; min-width: 0; } .ds-task-due { grid-column: 3; grid-row: 1; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.8125rem; line-height: 1.45; opacity: 0.6; white-space: nowrap; } .ds-task-note { grid-column: 2 / -1; grid-row: 2; font-size: 0.8125rem; line-height: 1.45; opacity: 0.6; margin: 0; }"
+    },
+    {
+      "name": "Setting Row",
+      "kind": "custom",
+      "refersTo": "setting-row",
+      "description": "Labelled row with a control on the right. Container query collapses to single-column stack below 500px.",
+      "html": "<article class=\"ds-setting-row\"><header class=\"ds-setting-label-group\"><h3 class=\"ds-setting-label\">Show completed tasks</h3><p class=\"ds-setting-description\">When on, finished tasks remain visible until midnight.</p></header><div class=\"ds-setting-control\"><button class=\"ds-toggle\" aria-pressed=\"true\" aria-label=\"Show completed tasks\"></button></div></article>",
+      "css": ".ds-setting-row { container-type: inline-size; display: grid; grid-template-columns: 1fr; row-gap: 0.5rem; padding: 1rem 1.5rem; border-top: 1px solid oklch(92% 0.005 250); background: oklch(99% 0.003 250); color: oklch(18% 0.01 250); } @container (min-width: 500px) { .ds-setting-row { grid-template-columns: 1fr auto; column-gap: 2.5rem; align-items: center; row-gap: 0; } } .ds-setting-label-group { display: flex; flex-direction: column; gap: 0.25rem; } .ds-setting-label { font-size: 1.125rem; line-height: 1.35; font-weight: 500; margin: 0; } .ds-setting-description { font-size: 1rem; line-height: 1.55; max-width: 60ch; opacity: 0.8; margin: 0; } .ds-setting-control { display: flex; align-items: center; justify-content: flex-end; }"
+    },
+    {
+      "name": "Page Header",
+      "kind": "custom",
+      "refersTo": "page-header",
+      "description": "App-chrome header. Eyebrow + title + meta + optional action. Replaces hero-text for product screens.",
+      "html": "<article class=\"ds-page-header\"><p class=\"ds-eyebrow\">Wednesday · May 27</p><h1 class=\"ds-page-title\">Today</h1><p class=\"ds-page-meta\">5 tasks · 2 completed</p><div class=\"ds-page-action\"><button class=\"ds-btn-primary\">+ Add task</button></div></article>",
+      "css": ".ds-page-header { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto auto; column-gap: 1.5rem; row-gap: 0.25rem; padding: 2.5rem 2.5rem 1.5rem; border-bottom: 1px solid oklch(92% 0.005 250); background: oklch(94% 0.005 250); color: oklch(18% 0.01 250); align-items: baseline; } .ds-eyebrow { grid-column: 1 / -1; grid-row: 1; font-size: 0.8125rem; line-height: 1.45; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; opacity: 0.55; margin: 0; } .ds-page-title { grid-column: 1; grid-row: 2; font-size: 2.25rem; line-height: 1.15; font-weight: 700; margin: 0; } .ds-page-meta { grid-column: 1; grid-row: 3; font-size: 1rem; line-height: 1.55; opacity: 0.7; margin: 0; } .ds-page-action { grid-column: 2; grid-row: 2; align-self: center; justify-self: end; }"
+    },
+    {
+      "name": "CTA Bar (emphasis)",
+      "kind": "card",
+      "refersTo": "cta-bar",
+      "description": "Page-level callout. Used quietly in footers; emphasis tone inverts to Deep Indigo for the one trial-expiry banner per session.",
+      "html": "<article class=\"ds-cta-bar\"><h2 class=\"ds-cta-heading\">Trial ends in 18 days</h2><p class=\"ds-cta-body\">Twelve dollars a year after that. One charge, no renewals you forget about.</p><div class=\"ds-cta-action\"><button class=\"ds-btn-primary\">Add a payment method</button></div></article>",
+      "css": ".ds-cta-bar { container-type: inline-size; display: block; padding: 1.5rem 2.5rem; border-radius: 0.75rem; background: oklch(23% 0.04 250); color: oklch(99% 0.003 250); } @container (min-width: 600px) { .ds-cta-bar { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 2.5rem; row-gap: 0.25rem; } .ds-cta-bar .ds-cta-heading { grid-column: 1; grid-row: 1; } .ds-cta-bar .ds-cta-body { grid-column: 1; grid-row: 2; } .ds-cta-bar .ds-cta-action { grid-column: 2; grid-row: 1 / span 2; align-self: center; } } .ds-cta-heading { font-size: 1.625rem; line-height: 1.25; font-weight: 600; margin: 0; } .ds-cta-body { font-size: 1rem; line-height: 1.55; max-width: 56ch; opacity: 0.85; margin: 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Companion",
+    "overview": "focus is paper, ink, and one quiet accent. The interface is a single sheet rendered at desk-sized width, holding a finite list and nothing else. The visual register sits at the corner of editorial-minimal and Apple-craft (Things.app rather than Linear): generous spacing, soft borders, custom toggles tuned to feel like fountain-pen marks rather than checkbox glyphs. No motion that decorates, no shadows that perform depth, no colour that competes for attention.",
+    "keyCharacteristics": [
+      "Paper-cool background with near-black ink. Single accent kept rare.",
+      "Flat surfaces with tonal layering for depth — no shadows.",
+      "Type scale fluid via clamp() from 320px to 1200px viewport.",
+      "Container queries everywhere; components adapt to their parent width, not the device viewport.",
+      "Custom-built toggle and checkbox primitives, not native controls.",
+      "Border-based dividers between row items, not shadowed cards."
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Accent Blue carries no more than 10% of any given screen by area. Two toggles on, one primary button is the upper limit. If accent shows up four times on one page, drop one.", "section": "colors" },
+      { "name": "The No Black Rule", "body": "No #000, no #fff. Every neutral is tinted toward the brand hue (chroma ≥ 0.003) so that the paper and ink read as one family rather than as two raw extremes.", "section": "colors" },
+      { "name": "The Fluid Scale Rule", "body": "Every typographic step is clamp() against viewport width (320–1200px). No fixed-pixel font sizes.", "section": "typography" },
+      { "name": "The Eyebrow Whisper Rule", "body": "When eyebrow text appears above a headline, it sits at Label size, all caps, tracking 0.08em, opacity 0.55. Never larger, never bolder.", "section": "typography" },
+      { "name": "The Flat Surface Rule", "body": "Surfaces never lift. No box-shadow on cards or sections. If a block needs depth, it is the wrong block or the wrong tone.", "section": "elevation" },
+      { "name": "The Border-First Divider Rule", "body": "Row dividers are always 1px solid borders in rule-subtle, never shadows. First-child rows lose the top border.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep Accent Blue at ≤10% of any screen by area.",
+      "Do use OKLCH for every colour value; never hex, never named CSS colours.",
+      "Do use container queries for responsive behaviour, not viewport media queries.",
+      "Do express depth through tonal layering (Page Canvas → Paper Warm → Paper) and 1px borders, not shadows.",
+      "Do use mono font for due times and data identifiers. Body sans for prose.",
+      "Do preserve :first-child border removal on row stacks.",
+      "Do gate every transition with prefers-reduced-motion: reduce."
+    ],
+    "donts": [
+      "Don't use #000 or #fff. Every neutral is tinted toward hue 250.",
+      "Don't use border-left or border-right >1px as a coloured accent stripe. Use box-shadow inset instead.",
+      "Don't add box-shadow for elevation at the block or section level.",
+      "Don't use gradient text (background-clip: text on a gradient background).",
+      "Don't introduce productivity-influencer aesthetics — neon accents, ALL-CAPS hype copy, dark-mode-only intensity themes.",
+      "Don't add streaks, points, badges, completion graphs, weekly charts.",
+      "Don't reach for a modal as the first thought for any flow.",
+      "Don't use intent=ghost for destructive actions once destructive intent lands.",
+      "Don't introduce native input type=checkbox; the custom checkbox is part of the craft signature."
+    ]
+  }
+}
