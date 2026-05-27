@@ -15,10 +15,17 @@
 // Single entry point for `npm run build`. Reuses validator.validatePath()
 // so render and validate share the exact same validation contract.
 
-import { readdirSync } from 'node:fs'
+import { readdirSync, writeFileSync, mkdirSync } from 'node:fs'
 import { resolve, join, basename } from 'node:path'
 import { ROOT } from './load-schemas.js'
 import { validatePath } from './validator.js'
+import { templates } from '../system/templates/index.js'
+import { blocks } from '../system/blocks/index.js'
+import { primitives } from '../system/primitives/index.js'
+import { escape } from '../system/lib/escape.js'
+
+const PROJECT_NAME = 'yamleer'
+const BUILD_TS = Date.now()
 
 // --- ANSI (same TTY/NO_COLOR detection as validate.js) ---
 const useColor =
@@ -96,15 +103,72 @@ if (failed.length > 0) {
   process.exit(1)
 }
 
-// ---------- 3..7 placeholder ----------
-//
-// Steps 3 (tokens), 4 (copy CSS), 5 (per-screen render), 6 (storyboard),
-// 7 (summary) land in subsequent commits. For now, print a confirming
-// dry-run summary so the validation pipeline is visible end-to-end.
+// ---------- build renderContext (closures bound) ----------
 
-console.log(`${c.green('✓')} Validation OK: ${results.length} screen(s) ready to render`)
+const renderContext = {
+  escape,
+  renderPrimitive: (data) => {
+    const fn = primitives[data.primitive]
+    if (!fn) throw new Error(`No primitive renderer for "${data.primitive}"`)
+    return fn(data, renderContext)
+  },
+  renderBlock: (data) => {
+    const fn = blocks[data.block]
+    if (!fn) throw new Error(`No block renderer for "${data.block}"`)
+    return fn(data, renderContext)
+  },
+}
+
+// ---------- 5. per-screen render → dist/screens/<id>.html ----------
+
+const distDir = join(ROOT, 'dist')
+const distScreensDir = join(distDir, 'screens')
+mkdirSync(distScreensDir, { recursive: true })
+
+const standaloneHtml = (id, templateName, mainHtml) => `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${escape(id)} — ${PROJECT_NAME}</title>
+  <link rel="stylesheet" href="../styles/tokens.css?v=${BUILD_TS}">
+  <link rel="stylesheet" href="../styles/reset.css?v=${BUILD_TS}">
+  <link rel="stylesheet" href="../styles/base.css?v=${BUILD_TS}">
+  <link rel="stylesheet" href="../styles/blocks.css?v=${BUILD_TS}">
+</head>
+<body>
+${mainHtml}
+</body>
+</html>
+`
+
+const rendered = []
 for (const r of results) {
-  console.log(`  ${c.dim(r.relPath.padEnd(40))} ${r.label}`)
+  const id = basename(r.relPath, '.yaml')
+  const templateName = r.data.template
+  const tplFn = templates[templateName]
+  if (!tplFn) {
+    console.error(`${c.red('FAIL')}  ${r.relPath}  no template renderer for "${templateName}"`)
+    process.exit(1)
+  }
+  const mainHtml = tplFn(r.data, renderContext)
+  const html = standaloneHtml(id, templateName, mainHtml)
+  const outPath = join(distScreensDir, `${id}.html`)
+  writeFileSync(outPath, html)
+  rendered.push({ id, templateName, mainHtml, bytes: html.length })
+}
+
+// ---------- 3, 4, 6, 7 placeholder ----------
+//
+// Still pending: tokens.css generation, system/styles copy, storyboard
+// composition, friendly summary. tokens.css and reset/base/blocks.css
+// must be in dist/styles/ for the standalone screens above to actually
+// render with styles. Next commit.
+
+console.log(`${c.green('✓')} ${rendered.length} screen(s) rendered to dist/screens/`)
+for (const r of rendered) {
+  const rel = `dist/screens/${r.id}.html`
+  console.log(`  ${c.dim(rel.padEnd(36))} ${r.templateName}  ${c.dim('(' + r.bytes + ' B)')}`)
 }
 console.log('')
-console.log(c.dim('  (steps 6.3–6.7 not yet implemented; no files written to dist/)'))
+console.log(c.dim('  (steps 6.4 [css copy], 6.5 [storyboard], 6.6 [summary] pending)'))
