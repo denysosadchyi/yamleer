@@ -1,0 +1,27 @@
+type: task-item
+description: Single task row — checkbox-style state + title + optional meta
+role: atomic
+
+fields:
+  title:
+    type: string
+    required: true
+    max-length: 120
+  done:
+    type: boolean
+    required: true
+  due:
+    type: string
+    required: false
+    max-length: 24
+  priority:
+    type: enum
+    values: [low, normal, high]
+    required: false
+  note:
+    type: string
+    required: false
+    max-length: 160
+
+variants:
+  tone: { tokenRef: tone }
