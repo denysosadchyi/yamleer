@@ -1,0 +1,19 @@
+type: cta-bar
+description: Conversion-oriented bar — heading + primary action
+
+fields:
+  heading:
+    type: string
+    required: true
+    max-length: 80
+  body:
+    type: string
+    max-length: 160
+  cta:
+    type: ref
+    ref-kind: primitive
+    ref-type: action
+    required: true
+
+variants:
+  tone: { tokenRef: tone }

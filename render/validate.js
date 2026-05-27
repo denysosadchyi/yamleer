@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, relative } from 'node:path'
 import yaml from 'js-yaml'
 import Ajv from 'ajv/dist/2020.js'
-import { ROOT, buildTokensValidators, buildPrimitiveValidator } from './load-schemas.js'
+import { ROOT, buildTokensValidators, buildPrimitiveValidator, buildBlockValidator } from './load-schemas.js'
 
 const usage = (code = 2) => {
   console.error('Usage: node render/validate.js <path> [--as <schema-name>]')
@@ -32,6 +32,7 @@ const pickSchema = () => {
   const tokensMatch = relPath.match(/^design\/tokens\/([^/]+)\.yaml$/)
   if (tokensMatch) return { kind: 'tokens', sub: tokensMatch[1] }
   if (relPath.match(/^system\/primitives\/[^/]+\.yaml$/)) return { kind: 'primitive' }
+  if (relPath.match(/^system\/blocks\/[^/]+\.yaml$/)) return { kind: 'block' }
   return null
 }
 
@@ -58,9 +59,12 @@ if (spec.kind === 'tokens') {
 } else if (spec.kind === 'primitive') {
   validator = buildPrimitiveValidator(ajv)
   label = spec.kind
+} else if (spec.kind === 'block') {
+  validator = buildBlockValidator(ajv)
+  label = spec.kind
 } else {
   console.error(`Schema kind "${spec.kind}" not wired yet.`)
-  console.error('Wired: tokens.{colors,spacing,typography,radius,roles}, primitive.')
+  console.error('Wired: tokens.{colors,spacing,typography,radius,roles}, primitive, block.')
   process.exit(2)
 }
 

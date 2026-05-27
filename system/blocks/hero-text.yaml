@@ -1,0 +1,19 @@
+type: hero-text
+description: Primary entry hero — title, lead, and optional call-to-action
+
+fields:
+  title:
+    type: string
+    required: true
+    max-length: 80
+  lead:
+    type: string
+    max-length: 240
+  cta:
+    type: ref
+    ref-kind: primitive
+    ref-type: action
+
+variants:
+  tone: { tokenRef: tone }
+  density: { enum: [comfortable, compact] }

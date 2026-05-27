@@ -1,0 +1,134 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "yamleer://block.schema.yaml"
+
+type: object
+required: [type, description, fields]
+additionalProperties: false
+properties:
+  type: { $ref: "#/$defs/identifier" }
+  description: { type: string, minLength: 1 }
+  fields:
+    type: object
+    propertyNames: { $ref: "#/$defs/identifier" }
+    additionalProperties: { $ref: "#/$defs/field-spec" }
+    minProperties: 1
+  slots:
+    type: object
+    propertyNames: { $ref: "#/$defs/identifier" }
+    additionalProperties: { $ref: "#/$defs/slot-spec" }
+    minProperties: 1
+  variants:
+    type: object
+    propertyNames: { $ref: "#/$defs/identifier" }
+    additionalProperties: { $ref: "#/$defs/variant-spec" }
+    minProperties: 1
+
+$defs:
+  identifier:
+    type: string
+    pattern: "^[a-z][a-z0-9-]*$"
+
+  field-spec:
+    oneOf:
+      - $ref: "#/$defs/field-string"
+      - $ref: "#/$defs/field-number"
+      - $ref: "#/$defs/field-enum"
+      - $ref: "#/$defs/field-ref"
+
+  field-string:
+    type: object
+    additionalProperties: false
+    properties:
+      type: { const: string }
+      required: { type: boolean }
+      max-length: { type: integer, minimum: 1 }
+      min-length: { type: integer, minimum: 0 }
+    required: [type]
+
+  field-number:
+    type: object
+    additionalProperties: false
+    properties:
+      type: { const: number }
+      required: { type: boolean }
+      min: { type: number }
+      max: { type: number }
+    required: [type]
+
+  field-enum:
+    type: object
+    additionalProperties: false
+    properties:
+      type: { const: enum }
+      required: { type: boolean }
+      values:
+        type: array
+        items: { type: string }
+        minItems: 1
+        uniqueItems: true
+    required: [type, values]
+
+  field-ref:
+    type: object
+    additionalProperties: false
+    properties:
+      type: { const: ref }
+      required: { type: boolean }
+      ref-kind: { const: primitive }
+      ref-type:
+        type: string
+        # enum populated at load-time with primitive names
+    required: [type, ref-kind, ref-type]
+
+  slot-spec:
+    type: object
+    required: [allows, cardinality]
+    properties:
+      allows:
+        type: array
+        items:
+          type: string
+          # enum populated at load-time with block names
+        minItems: 1
+        uniqueItems: true
+      cardinality: { type: string, enum: [one, many] }
+      required: { type: boolean }
+    allOf:
+      - if:
+          properties:
+            cardinality: { const: many }
+          required: [cardinality]
+        then:
+          properties:
+            min: { type: integer, minimum: 0 }
+            max: { type: integer, minimum: 1 }
+        else:
+          properties:
+            min: false
+            max: false
+    unevaluatedProperties: false
+
+  variant-spec:
+    oneOf:
+      - $ref: "#/$defs/variant-token-ref"
+      - $ref: "#/$defs/variant-enum"
+
+  variant-token-ref:
+    type: object
+    additionalProperties: false
+    properties:
+      tokenRef:
+        type: string
+        # enum populated at load-time with TOKEN_REF_MAP keys
+    required: [tokenRef]
+
+  variant-enum:
+    type: object
+    additionalProperties: false
+    properties:
+      enum:
+        type: array
+        items: { type: string }
+        minItems: 1
+        uniqueItems: true
+    required: [enum]

@@ -1,0 +1,22 @@
+type: section
+description: Titled content section — heading + body slot for atomic blocks
+
+fields:
+  heading:
+    type: string
+    required: true
+    max-length: 60
+  description:
+    type: string
+    max-length: 240
+
+slots:
+  body:
+    allows: [card]
+    cardinality: many
+    required: true
+    min: 1
+
+variants:
+  tone: { tokenRef: tone }
+  density: { enum: [comfortable, compact] }

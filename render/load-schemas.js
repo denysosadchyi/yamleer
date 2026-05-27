@@ -58,3 +58,40 @@ export const buildPrimitiveValidator = (ajv) => {
   const schema = loadSchema('primitive')
   return ajv.compile(schema)
 }
+
+export const TOKEN_REF_MAP = {
+  spacing:      { file: 'design/tokens/spacing.yaml',    path: '$' },
+  radius:       { file: 'design/tokens/radius.yaml',     path: '$' },
+  typography:   { file: 'design/tokens/typography.yaml', path: 'style' },
+  tone:         { file: 'design/tokens/roles.yaml',      path: 'tone' },
+  'color-role': { file: 'design/tokens/roles.yaml',      path: 'color-role' },
+}
+
+const requireArray = (label, value) => {
+  if (!Array.isArray(value) || value.length === 0) {
+    throw new Error(`schema injection failed: ${label} is not a non-empty array`)
+  }
+}
+
+export const buildBlockValidator = (ajv) => {
+  const schema = loadSchema('block')
+  const blocks = loadDictionary('system/blocks')
+  const primitives = loadDictionary('system/primitives')
+
+  const blockNames = Object.keys(blocks).sort()
+  const primitiveNames = Object.keys(primitives).sort()
+  const tokenRefKeys = Object.keys(TOKEN_REF_MAP).sort()
+
+  schema.$defs['slot-spec'].properties.allows.items.enum = blockNames
+  schema.$defs['field-ref'].properties['ref-type'].enum = primitiveNames
+  schema.$defs['variant-token-ref'].properties.tokenRef.enum = tokenRefKeys
+
+  requireArray('block.slot-spec.allows.items.enum',
+    schema.$defs['slot-spec'].properties.allows.items.enum)
+  requireArray('block.field-ref.ref-type.enum',
+    schema.$defs['field-ref'].properties['ref-type'].enum)
+  requireArray('block.variant-token-ref.tokenRef.enum',
+    schema.$defs['variant-token-ref'].properties.tokenRef.enum)
+
+  return ajv.compile(schema)
+}
