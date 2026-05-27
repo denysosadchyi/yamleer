@@ -1,0 +1,142 @@
+template: dashboard-grid
+
+slots:
+  header:
+    block: hero-text
+    title: Settings
+    lead: >-
+      Fewer than you'd expect, on purpose. The defaults reflect how focus
+      was meant to be used — change only what genuinely doesn't fit your
+      day.
+    tone: neutral
+    density: comfortable
+
+  main:
+    - block: section
+      heading: Account
+      description: >-
+        Email and password live here. Nothing else — focus doesn't ask for
+        a profile photo, a display name, or a timezone you'll forget you
+        set.
+      tone: neutral
+      slots:
+        body:
+          - block: setting-row
+            label: Email address
+            description: >-
+              theslowcolours@gmail.com. Used for sign-in and the
+              once-a-quarter security email. Never for newsletters.
+            control:
+              primitive: action
+              label: Change email
+              intent: secondary
+            tone: neutral
+          - block: setting-row
+            label: Password
+            description: >-
+              Last changed 142 days ago. Strong enough — no rotation
+              required, no expiry, no scolding banner.
+            control:
+              primitive: action
+              label: Change password
+              intent: secondary
+            tone: neutral
+
+    - block: section
+      heading: Preferences
+      description: >-
+        Three toggles and one weekly choice. We considered more and removed
+        them all — each deletion is documented in a public changelog.
+      tone: neutral
+      slots:
+        body:
+          - block: setting-row
+            label: Show completed tasks in today view
+            description: >-
+              When on, finished tasks remain visible under "Already done"
+              until midnight. When off, they disappear the moment you mark
+              them.
+            control:
+              primitive: toggle
+              on: true
+              name: show-completed-today
+              aria-label: Show completed tasks in today view
+            tone: neutral
+          - block: setting-row
+            label: Confirm before deleting a task
+            description: >-
+              Off by default — deletion is undoable from the archive for
+              30 days. Turn on if you want the extra prompt.
+            control:
+              primitive: toggle
+              on: false
+              name: confirm-delete
+              aria-label: Confirm before deleting a task
+            tone: neutral
+          - block: setting-row
+            label: Hide weekends from archive grouping
+            description: >-
+              When on, Saturday and Sunday roll into the adjacent week's
+              view. Useful if you don't work weekends and don't want them
+              visible as gaps.
+            control:
+              primitive: toggle
+              on: false
+              name: hide-weekends
+              aria-label: Hide weekends from archive grouping
+            tone: neutral
+          - block: setting-row
+            label: Start of week
+            description: >-
+              Currently Monday. The archive groups by week, so this decides
+              where weekly boundaries fall. Sunday or Monday only.
+            control:
+              primitive: action
+              label: Change to Sunday
+              intent: ghost
+            tone: neutral
+
+    - block: section
+      heading: Data
+      description: >-
+        Your tasks are yours. Export them whenever you want, delete the
+        account whenever you want — no retention windows, no cooling-off
+        period.
+      tone: muted
+      density: compact
+      slots:
+        body:
+          - block: setting-row
+            label: Export everything
+            description: >-
+              A single text file with every task, completed or pending,
+              grouped by date. Plain text — readable in any editor, on any
+              device, in any decade.
+            control:
+              primitive: action
+              label: Download archive
+              intent: secondary
+            tone: neutral
+          - block: setting-row
+            label: Delete account
+            description: >-
+              Removes your tasks, archive, and account from focus servers.
+              Confirmation required. No "win you back" email — if you
+              leave, you leave.
+            control:
+              primitive: action
+              label: Delete permanently
+              intent: ghost
+            tone: neutral
+
+  footer:
+    block: cta-bar
+    heading: Trial ends in 18 days
+    body: >-
+      Twelve dollars a year after that. One charge, no renewals you forget
+      about — we'll email a month before the next one.
+    cta:
+      primitive: action
+      label: Add a payment method
+      intent: primary
+    tone: emphasis
