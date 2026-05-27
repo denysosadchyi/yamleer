@@ -1,0 +1,26 @@
+tone:
+  neutral:
+    surface: { token: surface-neutral }
+    text: { token: text-primary }
+    border: { token: border-subtle }
+  emphasis:
+    surface: { token: surface-emphasis }
+    text: { token: text-inverse }
+    border: { token: border-emphasis }
+  muted:
+    surface: { token: surface-muted }
+    text: { token: text-secondary }
+    border: { token: border-subtle }
+  danger:
+    surface: { token: surface-danger }
+    text: { token: text-danger }
+    border: { token: border-danger }
+  success:
+    surface: { token: surface-success }
+    text: { token: text-success }
+    border: { token: border-success }
+
+color-role:
+  primary: { token: brand-primary }
+  secondary: { token: brand-secondary }
+  accent: { token: brand-accent }

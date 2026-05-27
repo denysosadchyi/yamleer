@@ -1,0 +1,20 @@
+surface-neutral: "oklch(99% 0.003 250)"
+surface-emphasis: "oklch(23% 0.04 250)"
+surface-muted: "oklch(96% 0.005 250)"
+surface-danger: "oklch(96% 0.03 25)"
+surface-success: "oklch(95% 0.04 145)"
+
+text-primary: "oklch(18% 0.01 250)"
+text-secondary: "oklch(45% 0.015 250)"
+text-inverse: "oklch(99% 0.003 250)"
+text-danger: "oklch(40% 0.18 25)"
+text-success: "oklch(35% 0.13 145)"
+
+border-subtle: "oklch(92% 0.005 250)"
+border-emphasis: "oklch(23% 0.04 250)"
+border-danger: "oklch(70% 0.15 25)"
+border-success: "oklch(70% 0.12 145)"
+
+brand-primary: "oklch(52% 0.16 250)"
+brand-secondary: "oklch(58% 0.10 200)"
+brand-accent: "oklch(70% 0.18 60)"

@@ -1,0 +1,83 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "yamleer://tokens.schema.yaml"
+
+$defs:
+  identifier:
+    type: string
+    pattern: "^[a-z][a-z0-9-]*$"
+
+  scalar-value:
+    type: string
+    minLength: 1
+
+  flat-string-scale:
+    type: object
+    propertyNames:
+      $ref: "#/$defs/identifier"
+    additionalProperties:
+      $ref: "#/$defs/scalar-value"
+
+  flat-numeric-scale:
+    type: object
+    propertyNames:
+      $ref: "#/$defs/identifier"
+    additionalProperties:
+      type: number
+
+  token-ref:
+    type: object
+    properties:
+      token:
+        $ref: "#/$defs/identifier"
+    required: [token]
+    additionalProperties: false
+
+  colors:
+    $ref: "#/$defs/flat-string-scale"
+
+  spacing:
+    $ref: "#/$defs/flat-string-scale"
+
+  radius:
+    $ref: "#/$defs/flat-string-scale"
+
+  typography:
+    type: object
+    properties:
+      family:
+        $ref: "#/$defs/flat-string-scale"
+      size:
+        $ref: "#/$defs/flat-string-scale"
+      weight:
+        $ref: "#/$defs/flat-numeric-scale"
+      line-height:
+        $ref: "#/$defs/flat-numeric-scale"
+    required: [family, size, weight, line-height]
+    additionalProperties: false
+
+  tone-entry:
+    type: object
+    properties:
+      surface: { $ref: "#/$defs/token-ref" }
+      text: { $ref: "#/$defs/token-ref" }
+      border: { $ref: "#/$defs/token-ref" }
+    required: [surface, text, border]
+    additionalProperties: false
+
+  roles:
+    type: object
+    properties:
+      tone:
+        type: object
+        propertyNames:
+          $ref: "#/$defs/identifier"
+        additionalProperties:
+          $ref: "#/$defs/tone-entry"
+      color-role:
+        type: object
+        propertyNames:
+          $ref: "#/$defs/identifier"
+        additionalProperties:
+          $ref: "#/$defs/token-ref"
+    required: [tone, color-role]
+    additionalProperties: false

@@ -1,0 +1,14 @@
+{
+  "name": "yamleer",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "yaml-first design pipeline",
+  "scripts": {
+    "validate": "node render/validate.js"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "js-yaml": "^4.1.0"
+  }
+}
