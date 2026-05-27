@@ -34,6 +34,8 @@ const buildFieldInstanceSchema = (fieldSpec, registerPrimitive) => {
     }
     case 'enum':
       return { enum: [...fieldSpec.values] }
+    case 'boolean':
+      return { type: 'boolean' }
     case 'ref': {
       if (fieldSpec['ref-kind'] !== 'primitive') {
         throw new Error(
