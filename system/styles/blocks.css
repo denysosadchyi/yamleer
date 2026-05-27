@@ -89,7 +89,14 @@
   margin-top: var(--spacing-sm);
 }
 
-/* ===== Block: section ===== */
+/* ===== Block: section =====
+ *
+ * Section panel pattern is universal: every section is a visual panel,
+ * regardless of tone. For "invisible" section behavior (transparent
+ * neutral, colored emphasis) do NOT override here — introduce a new
+ * block (e.g. section-bare) or a new variant via dictionary decision,
+ * so the new behavior is named and discoverable, not implicit.
+ */
 
 [data-block="section"] {
   background: var(--role-surface);
@@ -133,6 +140,12 @@
 @container (min-width: 720px) {
   [data-block="section"] [data-field="body"] {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@container (min-width: 960px) {
+  [data-block="section"] [data-field="body"] {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -233,6 +246,15 @@
   cursor: pointer;
   white-space: nowrap;
   color: var(--role-text);
+  transition: filter 120ms ease-out;
+}
+
+[data-primitive="action"]:hover {
+  filter: brightness(1.08);
+}
+
+[data-primitive="action"]:active {
+  filter: brightness(0.92);
 }
 
 [data-primitive="action"][data-intent="primary"] {
