@@ -172,6 +172,87 @@ const results = []
   })
 }
 
+// ----- Test 5: real setting-row negative tests via dashboard-grid -----
+// Exercises the production wiring: real setting-row block, real toggle/action
+// primitives, real section.body.allows widening, real dashboard-grid template.
+// No in-memory mutation — pure end-to-end on the shipped dictionary.
+{
+  const blocks = loadDictionary('system/blocks')
+  const primitives = loadDictionary('system/primitives')
+  const templates = loadDictionary('system/templates')
+
+  const schema = buildScreenSchema('dashboard-grid', templates, blocks, primitives)
+  const ajv = new Ajv({ strict: false, allErrors: true })
+  const validator = ajv.compile(schema)
+
+  const baseScreen = (settingRow) => ({
+    template: 'dashboard-grid',
+    slots: {
+      header: { block: 'hero-text', title: 'Settings' },
+      main: [{
+        block: 'section',
+        heading: 'Prefs',
+        slots: { body: [settingRow] },
+      }],
+    },
+  })
+
+  // 5a — setting-row with toggle control (positive, exercises union branch 1)
+  const screenToggle = baseScreen({
+    block: 'setting-row',
+    label: 'Notifications',
+    control: {
+      primitive: 'toggle',
+      on: true,
+      name: 'notif',
+      'aria-label': 'Notifications',
+    },
+  })
+  results.push({
+    name: '5a. setting-row with control: toggle validates',
+    ok: validator(screenToggle),
+    errors: validator.errors,
+  })
+
+  // 5b — setting-row with action control (positive, exercises union branch 2)
+  const screenAction = baseScreen({
+    block: 'setting-row',
+    label: 'Export',
+    control: { primitive: 'action', label: 'Download', intent: 'secondary' },
+  })
+  results.push({
+    name: '5b. setting-row with control: action validates',
+    ok: validator(screenAction),
+    errors: validator.errors,
+  })
+
+  // 5c — setting-row with primitive NOT in union (icon) → reject
+  const screenBadPrim = baseScreen({
+    block: 'setting-row',
+    label: 'X',
+    control: { primitive: 'icon', name: 'star' },
+  })
+  const okBadPrim = validator(screenBadPrim)
+  results.push({
+    name: '5c. setting-row rejects control: icon (not in [toggle, action] union)',
+    ok: !okBadPrim,
+    errors: okBadPrim ? ['expected rejection, got accept'] : null,
+  })
+
+  // 5d — setting-row missing required control → reject
+  const screenNoControl = baseScreen({
+    block: 'setting-row',
+    label: 'X',
+    // control omitted
+  })
+  const okNoControl = validator(screenNoControl)
+  results.push({
+    name: '5d. setting-row rejects missing required control field',
+    ok: !okNoControl,
+    errors: okNoControl ? ['expected rejection, got accept'] : null,
+  })
+}
+
 // ----- Report -----
 console.log('\nSmoke test — array form field-ref:\n')
 let allOk = true
