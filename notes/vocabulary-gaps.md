@@ -15,7 +15,32 @@ catalogued here so we don't ship the pretence as the design.
 
 ## focus-today
 
-### gap 1 — task item with toggleable completion state
+### gap 1 — task item with toggleable completion state ✅ CLOSED (v0.1.2)
+
+**Status.** Closed in v0.1.2-tasks. `task-item` block landed as the
+honest replacement for "card-as-task" hack from the reality-check.
+
+**Resolution.**
+
+| New artifact | Location |
+|--------------|----------|
+| `task-item` block | `system/blocks/task-item.yaml`, renderer in `system/blocks/index.js`, CSS in `system/styles/blocks.css` |
+| `field-boolean` in `block.schema.yaml` | enables `done: bool` on blocks (was previously only on primitives) |
+| `section.body.allows` | widened to `[card, setting-row, task-item]` |
+
+`task-item` renders as `<article data-block="task-item" data-done="..."
+data-priority="...">` with internal button for the checkbox (aria-pressed
+on the button), title as `<h3>`, optional due-time, optional note.
+Done state visually crosses the title and dims the row; high-priority
+gets a red left border.
+
+The checkbox is a button with `aria-pressed` (same accessible toggle
+pattern as the `toggle` primitive) — not a real `<input type=checkbox>`
+because (a) the row-level click target is the article, not the input,
+and (b) the toggle primitive already established the aria-pressed
+pattern in this dictionary.
+
+**Original spec (preserved for historical record).**
 
 **Blocker.** A todo list's core interaction is "tap the checkbox, task
 flips between pending and done". I need to render rows with
@@ -60,7 +85,23 @@ right block.
 
 ---
 
-### gap 2 — no list / collection container
+### gap 2 — no list / collection container ⚠️ PARTIAL (v0.1.2)
+
+**Status.** Half-closed. `section.body.allows` widened to
+`[card, setting-row, task-item]` — so tasks can group inside sections.
+But `section.body` still has `min: 1`, so an empty list ("nothing today")
+remains unrepresentable.
+
+CSS-layer fix: section.body switches to `display: block` (no grid) when
+it contains row-type atomic blocks (`task-item`, `setting-row`), via
+`:has()` selector. Cards still tile in a grid.
+
+**Still open:**
+- Empty-state representation. Could be done by relaxing
+  `section.body.min` to 0, or adding `empty-state` field/slot to section.
+  Deferred.
+
+**Original analysis preserved below.**
 
 **Blocker.** "Tasks for today" is a flat list. I want one container
 called "Today" with N task-items in it.
@@ -89,7 +130,23 @@ the current dictionary literally cannot render it.
 
 ---
 
-### gap 3 — inline "add task" affordance
+### gap 3 — inline "add task" affordance ⚠️ PARTIAL (v0.1.2)
+
+**Status.** Primitive landed; consumer pattern not yet wired.
+`text-input` primitive is in the dictionary with fields
+`{ placeholder, value, name, input-type (enum), aria-label, state }` and
+CSS for default/focused/error/disabled visual states.
+
+What's NOT done: text-input is not yet a valid `setting-row.control` (the
+control union is still `[toggle, action]`). And there is no
+"inline-input-row" or `add-item-row` block.
+
+**Workaround in production.** focus-today header has an `+ Add task`
+action button. Real product would render an inline input visualization.
+Trivial to wire next session: widen `setting-row.control` ref-type to
+`[toggle, action, text-input]` + one new screen.
+
+**Original analysis preserved below.**
 
 **Blocker.** Adding a task is the second core interaction. Standard
 patterns: an inline input field at the top of the list, or a
@@ -119,7 +176,28 @@ login, search, settings text fields, the lot.
 
 ---
 
-### gap 4 — page header that isn't a marketing hero
+### gap 4 — page header that isn't a marketing hero ✅ CLOSED (v0.1.2)
+
+**Status.** Closed. `page-header` block landed as the app-chrome
+alternative to `hero-text`.
+
+**Resolution.**
+
+| New artifact | Location |
+|--------------|----------|
+| `page-header` block (leaf) | `system/blocks/page-header.yaml`, renderer in `system/blocks/index.js`, CSS in `system/styles/blocks.css` |
+| `dashboard-grid.header.allows` | widened to `[hero-text, page-header]` |
+
+Fields: `title` (required, large but below display scale), `eyebrow`
+(optional uppercase context line above title), `meta` (optional dim
+single-line below title), `action` (optional ref to action, right-floats
+at title row). No `lead` field — that was the marketing-coded miss.
+
+Used by all three focus screens in v0.1.2. hero-text remains in the
+dictionary for marketing pages (no consumer right now since samples are
+out — see notes/audit/reality-check-focus/ if needed).
+
+**Original analysis preserved below.**
 
 **Blocker.** `dashboard-grid.header` requires `hero-text`. But `hero-text`
 is sized and semantically scoped for marketing entry — it has a `lead`
@@ -271,31 +349,43 @@ shows — every block fits its intended role, no pretence required.)
 
 ## summary
 
-| screen          | gaps blocking product | gaps cosmetic | status         |
-|-----------------|-----------------------|---------------|----------------|
-| focus-landing   | 0                     | 0             | clean          |
-| focus-today     | 1, 2, 3               | 4             | open           |
-| focus-archive   | (inherits 1, 2)       | 5, 6          | open           |
-| focus-settings  | ~~7~~                 | 8             | gap 7 closed in v0.1.1 |
+| screen          | gaps blocking product   | gaps cosmetic | status                          |
+|-----------------|-------------------------|---------------|---------------------------------|
+| focus-landing   | 0                       | 0             | dropped — focus is a todo, not a landing |
+| focus-today     | ~~1~~, 2 (empty), ~~3~~ | ~~4~~         | redesigned v0.1.2; gap 2 partial |
+| focus-archive   | ~~(inherits 1, 2)~~     | 5, 6          | redesigned v0.1.2 with task-item |
+| focus-settings  | ~~7~~                   | 8             | redesigned v0.1.2 with page-header |
 
-**Reading.** The dictionary is fit for marketing-coded B2B SaaS surfaces
-(landing pages, dashboards-as-overview). The moment a screen needs a
-*data-entry, toggleable, or state-bearing* interaction — which is most of
-any real product — the available blocks model only the *visual frame*
-around the interaction, not the interaction itself.
+**Reading.** As of v0.1.2-tasks the dictionary can express a real web
+todo app at production quality. The remaining gaps are either:
+- **cosmetic** (5: structured date-grouping; 6: overflow-menu / hover
+  actions; 8: destructive intent on action) — workarounds acceptable for
+  v1 shipping
+- **half-closed** (2: empty-state representation; 3: inline-input-row
+  block) — primitives exist, consumer wiring deferred
 
-The smallest unblock to ship focus would be:
-1. `task-item` block (gap 1) + widening `section.body.allows` (gap 2)
-2. `text-input` primitive (gap 3)
-3. ~~`toggle` primitive + a `setting-row` block (gap 7)~~ — **done v0.1.1**
-4. `destructive` added to `action.intent` enum (gap 8)
+**Closed in v0.1.1-controls:**
+- gap 7 — `setting-row` + `toggle` primitive (controls category)
 
-With 3 closed and the array-form ref-type infrastructure in place,
-`text-input` (gap 3) is now mechanically trivial — add the primitive,
-extend `setting-row.control` from `[toggle, action]` to `[toggle, action,
-text-input]`. The hard architectural work (host block + discriminated
-union mechanic) is done.
+**Closed in v0.1.2-tasks:**
+- gap 1 — `task-item` block (with `done: bool` via field-boolean on blocks)
+- gap 3 — `text-input` primitive (production wiring deferred — see partial)
+- gap 4 — `page-header` block (app chrome alternative to hero-text)
+- widenings: `section.body.allows: [card, setting-row, task-item]`,
+  `dashboard-grid.header.allows: [hero-text, page-header]`
 
-Next likely step: **gap 8** (`destructive` intent — ~30 min, isolated
-schema + CSS), then **gap 1** (task-item block + new template) as the
-serious next vertical slice.
+**Remaining work, ordered by ratio of impact to effort:**
+1. **gap 8** (~30 min) — `destructive` intent on `action` enum + CSS
+2. **gap 3 production wiring** (~1 hour) — widen `setting-row.control`
+   to include text-input, build `add-item-row` block, add inline input
+   to focus-today
+3. **gap 2 empty-state** (~1 hour) — relax `section.body.min` or add
+   `empty-state` field to section
+4. **gap 5** (~2 hours) — structured `list-group` block for archive
+   date headings; lets archive filter/sort controls live in chrome
+5. **gap 6** (~3 hours) — `overflow-menu` primitive + `card.actions`
+   slot pattern (broader pattern — affects archive, settings, today)
+
+Now-trivial: any new control primitive (select, radio-group, slider) =
+add the primitive + extend `setting-row.control` union. No
+architectural work required.

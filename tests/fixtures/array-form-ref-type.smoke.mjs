@@ -253,6 +253,140 @@ const results = []
   })
 }
 
+// ----- Test 6: new v0.2 vocab (page-header, task-item, text-input) -----
+// page-header lives at template header; task-item lives in section.body;
+// text-input is a primitive (not yet hosted by any production block but
+// must validate when authored). Tests confirm the widenings landed and
+// the new schemas accept correct instances + reject bad ones.
+{
+  const blocks = loadDictionary('system/blocks')
+  const primitives = loadDictionary('system/primitives')
+  const templates = loadDictionary('system/templates')
+
+  const schema = buildScreenSchema('dashboard-grid', templates, blocks, primitives)
+  const ajv = new Ajv({ strict: false, allErrors: true })
+  const validator = ajv.compile(schema)
+
+  // 6a — dashboard-grid.header accepts page-header (widened from hero-text only)
+  const screenPageHeader = {
+    template: 'dashboard-grid',
+    slots: {
+      header: { block: 'page-header', title: 'Today', tone: 'neutral' },
+      main: [{
+        block: 'section',
+        heading: 'X',
+        slots: { body: [{ block: 'card', heading: 'a' }] },
+      }],
+    },
+  }
+  results.push({
+    name: '6a. dashboard-grid.header accepts page-header (widened allows)',
+    ok: validator(screenPageHeader),
+    errors: validator.errors,
+  })
+
+  // 6b — section.body accepts task-item (widened from [card, setting-row])
+  const screenTaskItem = {
+    template: 'dashboard-grid',
+    slots: {
+      header: { block: 'page-header', title: 'Today', tone: 'neutral' },
+      main: [{
+        block: 'section',
+        heading: 'Up next',
+        slots: { body: [
+          { block: 'task-item', title: 'A task', done: false, priority: 'high' },
+        ] },
+      }],
+    },
+  }
+  results.push({
+    name: '6b. section.body accepts task-item with done:bool + priority:enum',
+    ok: validator(screenTaskItem),
+    errors: validator.errors,
+  })
+
+  // 6c — task-item without required done field → reject
+  const screenNoDone = {
+    template: 'dashboard-grid',
+    slots: {
+      header: { block: 'page-header', title: 'Today', tone: 'neutral' },
+      main: [{
+        block: 'section',
+        heading: 'X',
+        slots: { body: [
+          { block: 'task-item', title: 'A task' },  // done missing
+        ] },
+      }],
+    },
+  }
+  const okNoDone = validator(screenNoDone)
+  results.push({
+    name: '6c. task-item rejects missing required done:bool',
+    ok: !okNoDone,
+    errors: okNoDone ? ['expected rejection, got accept'] : null,
+  })
+
+  // 6d — task-item with bad priority enum → reject
+  const screenBadPriority = {
+    template: 'dashboard-grid',
+    slots: {
+      header: { block: 'page-header', title: 'Today', tone: 'neutral' },
+      main: [{
+        block: 'section',
+        heading: 'X',
+        slots: { body: [
+          { block: 'task-item', title: 'A task', done: false, priority: 'urgent' },
+        ] },
+      }],
+    },
+  }
+  const okBadPri = validator(screenBadPriority)
+  results.push({
+    name: '6d. task-item rejects priority outside [low, normal, high]',
+    ok: !okBadPri,
+    errors: okBadPri ? ['expected rejection, got accept'] : null,
+  })
+
+  // 6e — text-input primitive validates standalone (in a synth block field)
+  {
+    const blocksLocal = { ...blocks }
+    blocksLocal['synth-input-holder'] = {
+      type: 'synth-input-holder',
+      description: 'synth',
+      role: 'leaf',
+      fields: {
+        input: { type: 'ref', 'ref-kind': 'primitive', 'ref-type': 'text-input', required: true },
+      },
+    }
+    const templatesLocal = {
+      ...templates,
+      'single-column': {
+        ...templates['single-column'],
+        allows: [...templates['single-column'].allows, 'synth-input-holder'],
+      },
+    }
+    const schema2 = buildScreenSchema('single-column', templatesLocal, blocksLocal, primitives)
+    const v2 = new Ajv({ strict: false, allErrors: true }).compile(schema2)
+    const okInput = v2({
+      template: 'single-column',
+      blocks: [{
+        block: 'synth-input-holder',
+        input: {
+          primitive: 'text-input',
+          'input-type': 'search',
+          'aria-label': 'Search tasks',
+          placeholder: 'Search…',
+        },
+      }],
+    })
+    results.push({
+      name: '6e. text-input primitive validates with required input-type + aria-label',
+      ok: okInput,
+      errors: v2.errors,
+    })
+  }
+}
+
 // ----- Report -----
 console.log('\nSmoke test — array form field-ref:\n')
 let allOk = true
