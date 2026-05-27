@@ -8,7 +8,7 @@ slots:
     cardinality: one
     required: false
   header:
-    allows: [hero-text, page-header]
+    allows: [page-header]
     cardinality: one
     required: true
   main:
