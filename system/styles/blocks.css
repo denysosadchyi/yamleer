@@ -199,15 +199,6 @@
   align-items: flex-start;
 }
 
-@container (min-width: 600px) {
-  [data-block="cta-bar"] {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-xl);
-  }
-}
-
 [data-block="cta-bar"] [data-field="heading"] {
   font-size: var(--type-heading-md-size);
   font-weight: var(--type-heading-md-weight);
@@ -222,8 +213,23 @@
   opacity: 0.85;
 }
 
-[data-block="cta-bar"] [data-field="cta"] {
-  flex: 0 0 auto;
+/* At ≥600 px container width, switch to a 2-column grid so heading + body
+   stay left-stacked and cta anchors to the right, spanning both rows. */
+@container (min-width: 600px) {
+  [data-block="cta-bar"] {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: var(--spacing-xl);
+    row-gap: var(--spacing-xs);
+  }
+  [data-block="cta-bar"] [data-field="heading"] { grid-column: 1; grid-row: 1; }
+  [data-block="cta-bar"] [data-field="body"]    { grid-column: 1; grid-row: 2; }
+  [data-block="cta-bar"] [data-field="cta"]     {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
 }
 
 /* ===== Primitives ===== */

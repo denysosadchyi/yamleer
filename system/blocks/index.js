@@ -83,4 +83,15 @@ export const blocks = {
   <h3 data-field="heading">${escape(data.heading)}</h3>${bodyFrag}${ctaFrag}
 </article>`
   },
+
+  'cta-bar': (data, ctx) => {
+    const tone = escape(data.tone ?? 'neutral')
+    const bodyFrag = data.body
+      ? `\n  <p data-field="body">${escape(data.body)}</p>`
+      : ''
+    return `<article data-block="cta-bar" data-tone="${tone}">
+  <h2 data-field="heading">${escape(data.heading)}</h2>${bodyFrag}
+  <div data-field="cta">${ctx.renderPrimitive(data.cta)}</div>
+</article>`
+  },
 }
