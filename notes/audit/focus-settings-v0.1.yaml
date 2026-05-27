@@ -1,0 +1,113 @@
+template: dashboard-grid
+
+slots:
+  header:
+    block: hero-text
+    title: Settings
+    lead: >-
+      Fewer than you'd expect, on purpose. The defaults reflect how focus
+      was meant to be used — change only what genuinely doesn't fit your
+      day.
+    tone: neutral
+    density: comfortable
+
+  main:
+    - block: section
+      heading: Account
+      description: >-
+        Email and password live here. Nothing else — focus doesn't ask for
+        a profile photo, a display name, or a timezone you'll forget you
+        set.
+      tone: neutral
+      slots:
+        body:
+          - block: card
+            heading: Email address
+            body: >-
+              theslowcolours@gmail.com. Used for sign-in and the
+              once-a-quarter security email. Never for newsletters.
+            icon: { primitive: icon, name: mail }
+            cta: { primitive: action, label: Change email, intent: secondary }
+            tone: neutral
+          - block: card
+            heading: Password
+            body: >-
+              Last changed 142 days ago. Strong enough — no rotation
+              required, no expiry, no scolding banner.
+            icon: { primitive: icon, name: key }
+            cta: { primitive: action, label: Change password, intent: secondary }
+            tone: neutral
+
+    - block: section
+      heading: Preferences
+      description: >-
+        Three knobs. We considered more and removed them all — each
+        deletion is documented in a public changelog.
+      tone: neutral
+      slots:
+        body:
+          - block: card
+            heading: Start of week
+            body: >-
+              Currently Monday. The archive groups by week, so this decides
+              where weekly boundaries fall. Sunday or Monday only.
+            icon: { primitive: icon, name: calendar }
+            cta: { primitive: action, label: Change to Sunday, intent: ghost }
+            tone: neutral
+          - block: card
+            heading: Time format
+            body: >-
+              Currently 24-hour. Affects task due-times and archive
+              timestamps. 12-hour with am/pm is the alternative.
+            icon: { primitive: icon, name: clock }
+            cta: { primitive: action, label: Switch to 12-hour, intent: ghost }
+            tone: neutral
+          - block: card
+            heading: Theme
+            body: >-
+              Currently following your system setting. Light and dark both
+              designed deliberately — neither is an afterthought.
+            icon: { primitive: icon, name: contrast }
+            cta: { primitive: action, label: Set manually, intent: ghost }
+            tone: neutral
+
+    - block: section
+      heading: Data
+      description: >-
+        Your tasks are yours. Export them whenever you want, delete the
+        account whenever you want — no retention windows, no cooling-off
+        period.
+      tone: muted
+      density: compact
+      slots:
+        body:
+          - block: card
+            heading: Export everything
+            body: >-
+              A single text file with every task, completed or pending,
+              grouped by date. Plain text — readable in any editor, on any
+              device, in any decade.
+            icon: { primitive: icon, name: download }
+            cta: { primitive: action, label: Download archive, intent: secondary }
+            tone: neutral
+          - block: card
+            heading: Delete account
+            body: >-
+              Removes your tasks, archive, and account from focus servers.
+              Confirmation required. No "win you back" email — if you
+              leave, you leave.
+            icon: { primitive: icon, name: trash }
+            cta: { primitive: action, label: Delete permanently, intent: ghost }
+            tone: neutral
+
+  footer:
+    block: cta-bar
+    heading: Trial ends in 18 days
+    body: >-
+      Twelve dollars a year after that. One charge, no renewals you forget
+      about — we'll email a month before the next one.
+    cta:
+      primitive: action
+      label: Add a payment method
+      intent: primary
+    tone: emphasis
