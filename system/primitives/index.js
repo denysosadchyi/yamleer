@@ -27,16 +27,6 @@ export const primitives = {
     return `<button type="button" data-primitive="action" data-intent="${intent}">${label}</button>`
   },
 
-  // Icon — placeholder until a real glyph library lands. The name is
-  // exposed as data-name; CSS pseudo-elements render the visual token
-  // ('◆ <name>'). aria-hidden because the label is decorative until a
-  // real icon arrives.
-  icon: (data, _ctx) => {
-    const name = escape(data.name)
-    const sizeAttr = data.size ? ` data-size="${escape(data.size)}"` : ''
-    return `<span data-primitive="icon" data-name="${name}"${sizeAttr} aria-hidden="true"></span>`
-  },
-
   // Text-input — inline data-entry field. `input-type` becomes the HTML
   // type attribute; state behaves like other state-bearing primitives —
   // 'disabled' writes the HTML attribute; 'focused' is design-time only
@@ -53,6 +43,18 @@ export const primitives = {
     const disabledAttr = state === 'disabled' ? ' disabled' : ''
     const ariaInvalidAttr = state === 'error' ? ' aria-invalid="true"' : ''
     return `<input type="${inputType}" data-primitive="text-input" data-state="${state}" aria-label="${ariaLabel}"${nameAttr}${placeholderAttr}${valueAttr}${disabledAttr}${ariaInvalidAttr}>`
+  },
+
+  // Checkbox — two-state checkbox circle (empty / filled with check).
+  // Sibling pattern to toggle: both are aria-pressed buttons, just
+  // different visual. Used inside task-item (and any future list block
+  // that needs a per-row completion control).
+  checkbox: (data, _ctx) => {
+    const on = data.on === true
+    const ariaLabel = escape(data['aria-label'])
+    const state = escape(data.state ?? 'default')
+    const disabledAttr = state === 'disabled' ? ' disabled' : ''
+    return `<button type="button" data-primitive="checkbox" data-on="${on}" data-state="${state}" aria-label="${ariaLabel}" aria-pressed="${on}"${disabledAttr}></button>`
   },
 
   // Toggle — two-state on/off control rendered as <button> with

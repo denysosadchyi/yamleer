@@ -1,0 +1,15 @@
+type: checkbox
+description: Two-state checkbox — empty circle (off) or filled circle with check (on)
+
+fields:
+  on:
+    type: boolean
+    required: true
+  aria-label:
+    type: string
+    required: true
+    max-length: 120
+  state:
+    type: enum
+    values: [default, focused, disabled]
+    required: false

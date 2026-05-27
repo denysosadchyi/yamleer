@@ -37,20 +37,6 @@
 import { escape } from '../lib/escape.js'
 
 export const blocks = {
-  'hero-text': (data, ctx) => {
-    const tone = escape(data.tone ?? 'neutral')
-    const density = escape(data.density ?? 'comfortable')
-    const leadFrag = data.lead
-      ? `\n  <p data-field="lead">${escape(data.lead)}</p>`
-      : ''
-    const ctaFrag = data.cta
-      ? `\n  <div data-field="cta">${ctx.renderPrimitive(data.cta)}</div>`
-      : ''
-    return `<article data-block="hero-text" data-tone="${tone}" data-density="${density}">
-  <h1 data-field="title">${escape(data.title)}</h1>${leadFrag}${ctaFrag}
-</article>`
-  },
-
   section: (data, ctx) => {
     const tone = escape(data.tone ?? 'neutral')
     const density = escape(data.density ?? 'comfortable')
@@ -73,22 +59,6 @@ export const blocks = {
   <h2 data-field="heading">${escape(data.heading)}</h2>${descriptionFrag}
   <div data-field="body">${bodyFrag}</div>
 </section>`
-  },
-
-  card: (data, ctx) => {
-    const tone = escape(data.tone ?? 'neutral')
-    const iconFrag = data.icon
-      ? `\n  <div data-field="icon">${ctx.renderPrimitive(data.icon)}</div>`
-      : ''
-    const bodyFrag = data.body
-      ? `\n  <p data-field="body">${escape(data.body)}</p>`
-      : ''
-    const ctaFrag = data.cta
-      ? `\n  <div data-field="cta">${ctx.renderPrimitive(data.cta)}</div>`
-      : ''
-    return `<article data-block="card" data-tone="${tone}">${iconFrag}
-  <h3 data-field="heading">${escape(data.heading)}</h3>${bodyFrag}${ctaFrag}
-</article>`
   },
 
   'cta-bar': (data, ctx) => {
@@ -170,8 +140,17 @@ export const blocks = {
     const noteFrag = data.note
       ? `\n  <p data-field="note">${escape(data.note)}</p>`
       : ''
+    // Checkbox is a primitive (lives in system/primitives/checkbox.yaml).
+    // task-item composes it via ctx.renderPrimitive with done state and an
+    // auto-generated aria-label derived from the title. Author writes
+    // `done: true/false` on task-item, never touches the primitive directly.
+    const checkboxHtml = ctx.renderPrimitive({
+      primitive: 'checkbox',
+      on: done,
+      'aria-label': `Mark complete: ${data.title}`,
+    })
     return `<article data-block="task-item" data-tone="${tone}" data-done="${done}"${priorityAttr}>
-  <button type="button" data-field="checkbox" aria-pressed="${done}" aria-label="Mark complete: ${escape(data.title)}"></button>
+  <div data-field="checkbox">${checkboxHtml}</div>
   <h3 data-field="title">${escape(data.title)}</h3>${dueFrag}${noteFrag}
 </article>`
   },
