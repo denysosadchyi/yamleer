@@ -67,4 +67,20 @@ export const blocks = {
   <div data-field="body">${bodyFrag}</div>
 </section>`
   },
+
+  card: (data, ctx) => {
+    const tone = escape(data.tone ?? 'neutral')
+    const iconFrag = data.icon
+      ? `\n  <div data-field="icon">${ctx.renderPrimitive(data.icon)}</div>`
+      : ''
+    const bodyFrag = data.body
+      ? `\n  <p data-field="body">${escape(data.body)}</p>`
+      : ''
+    const ctaFrag = data.cta
+      ? `\n  <div data-field="cta">${ctx.renderPrimitive(data.cta)}</div>`
+      : ''
+    return `<article data-block="card" data-tone="${tone}">${iconFrag}
+  <h3 data-field="heading">${escape(data.heading)}</h3>${bodyFrag}${ctaFrag}
+</article>`
+  },
 }
