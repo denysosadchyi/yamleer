@@ -14,6 +14,7 @@
 
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { ROOT, loadTokens } from './load-schemas.js'
 
 const REM_BASE = 16
@@ -51,7 +52,7 @@ const section = (out, label) => {
 
 const prefix = (name) => name.split('-')[0]
 
-const generate = () => {
+export const generate = () => {
   const tokens = loadTokens()
   const out = []
 
@@ -133,6 +134,10 @@ const generate = () => {
   return { outPath, lines: out.length, bytes: body.length }
 }
 
-const { outPath, lines, bytes } = generate()
-const rel = outPath.startsWith(ROOT) ? outPath.slice(ROOT.length + 1) : outPath
-console.log(`OK    ${rel}  ${lines} lines, ${bytes} bytes`)
+// Auto-run only when invoked as a CLI (npm run tokens), not when imported.
+const isMainModule = fileURLToPath(import.meta.url) === process.argv[1]
+if (isMainModule) {
+  const { outPath, lines, bytes } = generate()
+  const rel = outPath.startsWith(ROOT) ? outPath.slice(ROOT.length + 1) : outPath
+  console.log(`OK    ${rel}  ${lines} lines, ${bytes} bytes`)
+}

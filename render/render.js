@@ -15,10 +15,11 @@
 // Single entry point for `npm run build`. Reuses validator.validatePath()
 // so render and validate share the exact same validation contract.
 
-import { readdirSync, writeFileSync, mkdirSync } from 'node:fs'
+import { readdirSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs'
 import { resolve, join, basename } from 'node:path'
 import { ROOT } from './load-schemas.js'
 import { validatePath } from './validator.js'
+import { generate as generateTokensCss } from './tokens-to-css.js'
 import { templates } from '../system/templates/index.js'
 import { blocks } from '../system/blocks/index.js'
 import { primitives } from '../system/primitives/index.js'
@@ -119,11 +120,28 @@ const renderContext = {
   },
 }
 
-// ---------- 5. per-screen render → dist/screens/<id>.html ----------
+// ---------- 3. tokens.css generation + 4. system/styles/ copy ----------
 
 const distDir = join(ROOT, 'dist')
+const distStylesDir = join(distDir, 'styles')
 const distScreensDir = join(distDir, 'screens')
+mkdirSync(distStylesDir, { recursive: true })
 mkdirSync(distScreensDir, { recursive: true })
+
+// 3. tokens.css → dist/styles/tokens.css
+const tokensResult = generateTokensCss()
+
+// 4. Copy static stylesheets so dist/ is self-contained under http-server.
+const STATIC_CSS = ['reset.css', 'base.css', 'blocks.css', 'storyboard.css']
+const copiedCss = []
+for (const name of STATIC_CSS) {
+  const src = join(ROOT, 'system', 'styles', name)
+  const dest = join(distStylesDir, name)
+  copyFileSync(src, dest)
+  copiedCss.push(name)
+}
+
+// ---------- 5. per-screen render → dist/screens/<id>.html ----------
 
 const standaloneHtml = (id, templateName, mainHtml) => `<!doctype html>
 <html lang="en">
@@ -158,17 +176,21 @@ for (const r of results) {
   rendered.push({ id, templateName, mainHtml, bytes: html.length })
 }
 
-// ---------- 3, 4, 6, 7 placeholder ----------
+// ---------- 6, 7 placeholder ----------
 //
-// Still pending: tokens.css generation, system/styles copy, storyboard
-// composition, friendly summary. tokens.css and reset/base/blocks.css
-// must be in dist/styles/ for the standalone screens above to actually
-// render with styles. Next commit.
+// Storyboard composition and friendly summary next. For now, report
+// what we wrote.
 
-console.log(`${c.green('✓')} ${rendered.length} screen(s) rendered to dist/screens/`)
+console.log(`${c.green('✓')} CSS:     ${copiedCss.length} static + tokens.css (${tokensResult.lines} lines)`)
+for (const name of copiedCss) {
+  console.log(`  ${c.dim('dist/styles/' + name)}`)
+}
+console.log(`  ${c.dim('dist/styles/tokens.css')}  ${c.dim('(' + tokensResult.bytes + ' B, generated)')}`)
+console.log('')
+console.log(`${c.green('✓')} Screens: ${rendered.length} standalone HTML files`)
 for (const r of rendered) {
   const rel = `dist/screens/${r.id}.html`
   console.log(`  ${c.dim(rel.padEnd(36))} ${r.templateName}  ${c.dim('(' + r.bytes + ' B)')}`)
 }
 console.log('')
-console.log(c.dim('  (steps 6.4 [css copy], 6.5 [storyboard], 6.6 [summary] pending)'))
+console.log(c.dim('  (steps 6.5 [storyboard], 6.6 [summary] pending)'))

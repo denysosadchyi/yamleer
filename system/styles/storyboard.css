@@ -1,0 +1,89 @@
+/* ===== Storyboard =====
+ *
+ * Layout shell for dist/index.html — the grid of screens viewed
+ * side-by-side ("figma-canvas feel"). Chrome only: never affects the
+ * content INSIDE a screen frame.
+ *
+ * Discipline mirrors blocks.css: zero class selectors, zero inline
+ * style. Storyboard hooks are data-* attributes on the chrome
+ * elements emitted by render.js.
+ */
+
+/* Outer grid: auto-flow columns sized to a comfortable screen width. */
+[data-storyboard] {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(720px, 1fr));
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  max-width: 1600px;
+  margin-inline: auto;
+}
+
+/* Individual screen frame: white card with subtle elevation against the
+   body's --color-surface-muted background. */
+[data-screen-frame] {
+  background: var(--color-surface-neutral);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 2px oklch(20% 0.02 250 / 0.04),
+              0 8px 24px oklch(20% 0.02 250 / 0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Caption strip at the top of each frame: identifies the screen,
+   exposes the template, and reserves space for future debug detail. */
+[data-frame-caption] {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-surface-muted);
+  border-bottom: 1px solid var(--color-border-subtle);
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  line-height: var(--type-caption-leading);
+  color: var(--color-text-secondary);
+}
+
+[data-frame-name] {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+}
+
+[data-frame-meta] {
+  flex: 1 1 auto;
+  font-family: var(--font-mono);
+  opacity: 0.7;
+}
+
+[data-frame-debug] {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  opacity: 0.6;
+}
+
+[data-frame-debug] summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.1em 0.4em;
+  border-radius: var(--radius-sm);
+}
+
+[data-frame-debug] summary:hover {
+  background: var(--color-border-subtle);
+}
+
+[data-frame-debug][open] summary {
+  margin-bottom: var(--spacing-xs);
+}
+
+/* The actual rendered screen lives inside the body. Container query
+   scope is set here so block-level @container rules adapt to the frame
+   width, not the page viewport. */
+[data-frame-body] {
+  container-type: inline-size;
+  padding: var(--spacing-lg);
+  background: var(--color-surface-muted);
+}
