@@ -1,0 +1,13 @@
+# Walker-1 negative: structural block declares a slot whose allows
+# includes a leaf block (hero-text). Schema passes (hero-text is known).
+# Walker 1 must reject: structural-block slot.allows entries must have
+# role: atomic only.
+type: bad-block-slot-allows
+description: structural slot allows a leaf
+role: structural
+fields:
+  heading: { type: string, required: true }
+slots:
+  body:
+    allows: [hero-text]
+    cardinality: many

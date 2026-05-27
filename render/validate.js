@@ -4,29 +4,48 @@ import yaml from 'js-yaml'
 import Ajv from 'ajv/dist/2020.js'
 import {
   ROOT,
+  loadContext,
   buildTokensValidators,
   buildPrimitiveValidator,
   buildBlockValidator,
   buildTemplateValidator,
   buildScreenValidator,
 } from './load-schemas.js'
+import { walkers, findWalker } from './walkers/index.js'
 
 const usage = (code = 2) => {
-  console.error('Usage: node render/validate.js <path> [--as <schema-name>]')
-  console.error('  Convention by path:')
-  console.error('    design/tokens/<name>.yaml  -> tokens.<name>')
-  console.error('  Override with --as, e.g.: --as tokens.colors')
+  console.error('Usage: node render/validate.js <path> [flags]')
+  console.error('  Convention picks schema kind from path; override with --as <kind>[.sub]')
+  console.error('  Flags:')
+  console.error('    --as <kind>             override schema dispatch (e.g. --as tokens.colors)')
+  console.error('    --skip-walkers          run AJV only, skip post-validation walkers')
+  console.error('    --only-walker=<name>    run a single walker; valid: ' +
+    walkers.map(w => w.name).join(', '))
   process.exit(code)
 }
 
 const args = process.argv.slice(2)
 const asIdx = args.indexOf('--as')
 const explicitAs = asIdx >= 0 ? args[asIdx + 1] : null
-const positional = asIdx >= 0
-  ? args.filter((_, i) => i !== asIdx && i !== asIdx + 1)
-  : args
+const skipWalkers = args.includes('--skip-walkers')
+const onlyWalkerArg = args.find(a => a.startsWith('--only-walker='))
+const onlyWalker = onlyWalkerArg ? onlyWalkerArg.split('=')[1] : null
+
+const positional = args.filter((arg, i) => {
+  if (arg === '--as') return false
+  if (arg === '--skip-walkers') return false
+  if (arg.startsWith('--only-walker=')) return false
+  if (asIdx >= 0 && i === asIdx + 1) return false
+  return true
+})
 const targetPath = positional[0]
 if (!targetPath) usage()
+
+if (onlyWalker && !findWalker(onlyWalker)) {
+  console.error(`Unknown walker: "${onlyWalker}".`)
+  console.error(`Known: ${walkers.map(w => w.name).join(', ')}`)
+  process.exit(2)
+}
 
 const absPath = resolve(targetPath)
 const relPath = relative(ROOT, absPath)
@@ -95,15 +114,46 @@ if (spec.kind === 'tokens') {
 
 const ok = validator(data)
 
-if (ok) {
-  console.log(`OK    ${relPath}  validates as ${label}`)
+if (!ok) {
+  console.error(`FAIL  ${relPath}  failed validation as ${label}:`)
+  for (const e of validator.errors) {
+    const path = e.instancePath || '/'
+    const params = JSON.stringify(e.params)
+    console.error(`      ${path}  ${e.message}  ${params}`)
+  }
+  process.exit(1)
+}
+
+// AJV passed. Run post-validation walkers unless suppressed.
+let walkerErrors = []
+if (!skipWalkers) {
+  const context = loadContext()
+  const walkersToRun = onlyWalker
+    ? walkers.filter(w => w.name === onlyWalker)
+    : walkers
+  for (const w of walkersToRun) {
+    try {
+      const errs = w.fn(data, context)
+      if (Array.isArray(errs)) walkerErrors.push(...errs)
+    } catch (e) {
+      walkerErrors.push({
+        walker: w.name,
+        message: `walker crashed: ${e.message}`,
+      })
+    }
+  }
+}
+
+if (walkerErrors.length === 0) {
+  const tail = skipWalkers ? ' (walkers skipped)' : ''
+  console.log(`OK    ${relPath}  validates as ${label}${tail}`)
   process.exit(0)
 }
 
-console.error(`FAIL  ${relPath}  failed validation as ${label}:`)
-for (const e of validator.errors) {
-  const path = e.instancePath || '/'
-  const params = JSON.stringify(e.params)
-  console.error(`      ${path}  ${e.message}  ${params}`)
+console.error(`FAIL  ${relPath}  ${label}  schema OK, walkers found ${walkerErrors.length} issue(s):`)
+for (const e of walkerErrors) {
+  console.error(`  WALKER ${e.walker}`)
+  if (e.path) console.error(`    PATH    ${e.path}`)
+  console.error(`    ${e.message}`)
 }
 process.exit(1)

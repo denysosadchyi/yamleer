@@ -1,0 +1,28 @@
+template: dashboard-grid
+slots:
+  header:
+    block: hero-text
+    title: Maritime operations
+    lead: Simplified for modern fleets
+    cta: { primitive: action, label: Request demo, intent: primary }
+    tone: neutral
+  main:
+    - block: section
+      heading: Built for the fleet
+      tone: neutral
+      slots:
+        body:
+          - block: card
+            heading: Fleet tracking
+            body: Real-time visibility for every vessel
+            icon: { primitive: icon, name: anchor }
+            tone: neutral
+          - block: card
+            heading: Route optimization
+            body: AI-assisted planning
+            icon: { primitive: icon, name: route }
+            tone: neutral
+  footer:
+    block: cta-bar
+    heading: Ready to start?
+    cta: { primitive: action, label: Get started, intent: primary }

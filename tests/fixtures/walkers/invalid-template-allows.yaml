@@ -1,0 +1,8 @@
+# Walker-1 negative: template.allows includes an atomic block (card).
+# Schema passes (card is a known block name). Walker 1 must reject:
+# template.allows entries must have role in [leaf, structural], not atomic.
+type: bad-template-allows
+description: deliberately includes an atomic block in allows
+mode: sequence
+allows: [card]
+min-blocks: 1

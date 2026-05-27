@@ -1,0 +1,11 @@
+# Walker-3 negative: a roles.yaml shape with a token reference that
+# does not exist in design/tokens/colors.yaml.
+# Schema passes (any identifier string is a valid 'token' value).
+# Walker 3 must reject: token "surface-nonexistent" not found in colors.yaml.
+tone:
+  neutral:
+    surface: { token: surface-nonexistent }
+    text: { token: text-primary }
+    border: { token: border-subtle }
+color-role:
+  primary: { token: brand-primary }
