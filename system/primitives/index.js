@@ -37,6 +37,24 @@ export const primitives = {
     return `<span data-primitive="icon" data-name="${name}"${sizeAttr} aria-hidden="true"></span>`
   },
 
+  // Text-input — inline data-entry field. `input-type` becomes the HTML
+  // type attribute; state behaves like other state-bearing primitives —
+  // 'disabled' writes the HTML attribute; 'focused' is design-time only
+  // (simulates :focus for storyboard); 'error' adds aria-invalid.
+  'text-input': (data, _ctx) => {
+    const inputType = escape(data['input-type'])
+    const ariaLabel = escape(data['aria-label'])
+    const state = escape(data.state ?? 'default')
+    const placeholderAttr = data.placeholder
+      ? ` placeholder="${escape(data.placeholder)}"` : ''
+    const valueAttr = data.value !== undefined
+      ? ` value="${escape(data.value)}"` : ''
+    const nameAttr = data.name ? ` name="${escape(data.name)}"` : ''
+    const disabledAttr = state === 'disabled' ? ' disabled' : ''
+    const ariaInvalidAttr = state === 'error' ? ' aria-invalid="true"' : ''
+    return `<input type="${inputType}" data-primitive="text-input" data-state="${state}" aria-label="${ariaLabel}"${nameAttr}${placeholderAttr}${valueAttr}${disabledAttr}${ariaInvalidAttr}>`
+  },
+
   // Toggle — two-state on/off control rendered as <button> with
   // aria-pressed (the standard accessible toggle pattern, not a checkbox).
   // `state` is design-time only: 'focused' simulates the :focus ring for

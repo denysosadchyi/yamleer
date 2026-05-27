@@ -1,0 +1,28 @@
+type: text-input
+description: Inline text entry — input field with placeholder, optional initial value
+
+fields:
+  placeholder:
+    type: string
+    required: false
+    max-length: 80
+  value:
+    type: string
+    required: false
+    max-length: 200
+  name:
+    type: string
+    required: false
+    max-length: 60
+  input-type:
+    type: enum
+    values: [text, email, password, search]
+    required: true
+  aria-label:
+    type: string
+    required: true
+    max-length: 80
+  state:
+    type: enum
+    values: [default, focused, error, disabled]
+    required: false
