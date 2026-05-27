@@ -5,16 +5,6 @@
 > multi-screen storyboard, an interactive YAML explorer with
 > wireframe diagrams, and a pipeline architecture page.
 
-![focus-today screen rendered at 1366px](docs/images/focus-today.png)
-
-Above: a `focus-today.yaml` screen rendered at 1366px. Sidebar nav,
-warm-paper main, custom checkbox circles, red-dot priority indicator,
-quiet uppercase section labels — all defined in the dictionary, no
-per-screen CSS. The full vocabulary that produces this is **4
-primitives + 7 blocks + 2 templates**.
-
----
-
 ## What this is
 
 yamleer takes the design-system idea seriously. Instead of writing
@@ -98,25 +88,22 @@ or with a typical component library import:
   many-faced (principle 2); section is the universal grouping
   container (principle 3). The vocabulary stays tight by design.
 
-## Quick visual tour
+## How it works
 
-**Storyboard** — every screen at 1366px, side-by-side:
-![storyboard](docs/images/storyboard.png)
+Five-stage pipeline. Author writes YAML, contract validates it,
+build emits static output.
 
-**Empty state** (`focus-today-empty.yaml`) — first-launch experience,
-PRODUCT.md-voiced copy when nothing's scheduled yet:
-![empty state](docs/images/focus-today-empty.png)
+![pipeline diagram](docs/images/diagram-pipeline.png)
 
-**YAML explorer** (`dist/index.html`, served at `/`) — every YAML in
-the project with structure tree, wireframe block diagram, and raw
-source per file:
-![yaml explorer](docs/images/yaml-explorer.png)
+Composition hierarchy. Tokens feed primitives, primitives compose
+into blocks, blocks slot into templates, templates instantiate as
+screens. Tokens are also referenced directly by blocks via
+`roles/tone`.
 
-**Pipeline architecture** (`dist/architecture.html`) — two mermaid
-diagrams showing the five-stage pipeline (Author → Contract →
-Validate → Build → Output) and the composition hierarchy (tokens →
-primitives → blocks → templates → screens):
-![architecture page](docs/images/architecture.png)
+![composition diagram](docs/images/diagram-composition.png)
+
+Both diagrams live in `dist/architecture.html` with the full prose
+description per stage.
 
 ## Run
 
