@@ -50,4 +50,21 @@ export const blocks = {
   <h1 data-field="title">${escape(data.title)}</h1>${leadFrag}${ctaFrag}
 </article>`
   },
+
+  section: (data, ctx) => {
+    const tone = escape(data.tone ?? 'neutral')
+    const density = escape(data.density ?? 'comfortable')
+    const descriptionFrag = data.description
+      ? `\n  <p data-field="description">${escape(data.description)}</p>`
+      : ''
+    const bodyItems = (data.slots?.body ?? [])
+      .map((b) => ctx.renderBlock(b))
+      .map((html) => html.split('\n').map((line) => `    ${line}`).join('\n'))
+      .join('\n')
+    const bodyFrag = bodyItems ? `\n${bodyItems}\n  ` : ''
+    return `<section data-block="section" data-tone="${tone}" data-density="${density}">
+  <h2 data-field="heading">${escape(data.heading)}</h2>${descriptionFrag}
+  <div data-field="body">${bodyFrag}</div>
+</section>`
+  },
 }
