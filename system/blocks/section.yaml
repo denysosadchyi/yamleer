@@ -13,7 +13,7 @@ fields:
 
 slots:
   body:
-    allows: [card]
+    allows: [card, setting-row]
     cardinality: many
     required: true
     min: 1
