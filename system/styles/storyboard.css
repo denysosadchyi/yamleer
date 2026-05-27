@@ -9,19 +9,25 @@
  * elements emitted by render.js.
  */
 
-/* Outer grid: auto-flow columns sized to a comfortable screen width. */
+/* Vertical stack: each screen rendered at 1366px frame width so the
+   author always sees the design at the canonical desktop viewport
+   regardless of monitor size. Frames center-align; viewports narrower
+   than 1366 fall back to viewport width (no horizontal scroll). */
 [data-storyboard] {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: var(--spacing-xl);
   padding: var(--spacing-xl);
-  max-width: 1600px;
-  margin-inline: auto;
 }
 
 /* Individual screen frame: white card with subtle elevation against the
-   body's --color-surface-muted background. */
+   body's --color-surface-muted background. Fixed 1366 width on
+   sufficient viewports; max-width: 100% prevents overflow on narrower
+   monitors. */
 [data-screen-frame] {
+  width: 1366px;
+  max-width: 100%;
   background: var(--color-surface-neutral);
   border-radius: var(--radius-lg);
   box-shadow: 0 1px 2px oklch(20% 0.02 250 / 0.04),

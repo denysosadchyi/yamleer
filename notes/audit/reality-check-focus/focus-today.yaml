@@ -1,0 +1,88 @@
+template: dashboard-grid
+
+slots:
+  header:
+    block: hero-text
+    title: Wednesday, May 27
+    lead: >-
+      Three tasks today. Two carried over from yesterday, one added this
+      morning. Nothing scheduled after 4pm.
+    cta:
+      primitive: action
+      label: Add a task
+      intent: primary
+    tone: neutral
+    density: comfortable
+
+  main:
+    - block: section
+      heading: Morning
+      description: >-
+        Before lunch. Start with the writing — it always takes longer than
+        you remember.
+      tone: neutral
+      slots:
+        body:
+          - block: card
+            heading: Draft Q2 strategy memo
+            body: >-
+              Pending · due 11:00 · high priority. Carried over from
+              Tuesday. Three sections done, intro and conclusion remain.
+            icon: { primitive: icon, name: circle, size: md }
+            cta: { primitive: action, label: Mark complete, intent: secondary }
+            tone: neutral
+          - block: card
+            heading: Review pull request #284
+            body: >-
+              Pending · due 12:30 · normal priority. Added this morning.
+              Maya needs feedback before her afternoon ship.
+            icon: { primitive: icon, name: circle, size: md }
+            cta: { primitive: action, label: Mark complete, intent: secondary }
+            tone: neutral
+
+    - block: section
+      heading: Afternoon
+      description: >-
+        After lunch, one item only. Leave the rest of the day open for
+        whatever the morning surfaces.
+      tone: neutral
+      density: compact
+      slots:
+        body:
+          - block: card
+            heading: Call with Jonas, research handoff
+            body: >-
+              Scheduled · 14:00 to 14:45 · normal priority. Notes from
+              last week's session are in the linked doc.
+            icon: { primitive: icon, name: circle, size: md }
+            cta: { primitive: action, label: Mark complete, intent: secondary }
+            tone: neutral
+
+    - block: section
+      heading: Already done
+      description: >-
+        Quiet acknowledgement, nothing more. Tomorrow's archive will hold
+        these alongside the rest.
+      tone: muted
+      density: compact
+      slots:
+        body:
+          - block: card
+            heading: Clear inbox to zero
+            body: >-
+              Completed at 08:42. Took twelve minutes — faster than usual.
+              Three threads flagged for tomorrow.
+            icon: { primitive: icon, name: check-circle, size: md }
+            tone: muted
+
+  footer:
+    block: cta-bar
+    heading: That's everything today
+    body: >-
+      Close the tab and start the first one. You don't need to look at this
+      list again until you finish what's in front of you.
+    cta:
+      primitive: action
+      label: Add another task
+      intent: ghost
+    tone: muted

@@ -1,0 +1,130 @@
+template: dashboard-grid
+
+slots:
+  header:
+    block: hero-text
+    title: Archive
+    lead: >-
+      Everything you've finished, grouped by day. focus keeps the full
+      history — no auto-deletion, no thirty-day cliff. Scroll back as far
+      as you need.
+    cta:
+      primitive: action
+      label: Export as text
+      intent: secondary
+    tone: neutral
+    density: comfortable
+
+  main:
+    - block: section
+      heading: Tuesday, May 26 — 4 completed
+      description: >-
+        A heavier day than usual. Two carried into Wednesday — see the
+        morning section there.
+      tone: neutral
+      slots:
+        body:
+          - block: card
+            heading: Ship v1.4 release notes
+            body: >-
+              Completed at 10:15. Took 45 minutes. Published to the
+              changelog before the morning standup.
+            icon: { primitive: icon, name: check-circle }
+            cta: { primitive: action, label: Restore to today, intent: ghost }
+            tone: muted
+          - block: card
+            heading: Migrate analytics dashboard
+            body: >-
+              Completed at 13:30. Took two hours — half an hour longer than
+              estimated. New queries running cleanly.
+            icon: { primitive: icon, name: check-circle }
+            cta: { primitive: action, label: Restore to today, intent: ghost }
+            tone: muted
+          - block: card
+            heading: One-on-one with Sam
+            body: >-
+              Completed at 15:00. Forty minutes. Notes saved in the shared
+              doc, two follow-ups for next week.
+            icon: { primitive: icon, name: check-circle }
+            cta: { primitive: action, label: Restore to today, intent: ghost }
+            tone: muted
+          - block: card
+            heading: Reply to compliance email
+            body: >-
+              Completed at 17:20. Five minutes. Forwarded the requested
+              certs and CC'd legal.
+            icon: { primitive: icon, name: check-circle }
+            cta: { primitive: action, label: Restore to today, intent: ghost }
+            tone: muted
+
+    - block: section
+      heading: Monday, May 25 — 2 completed
+      description: >-
+        Light Monday. A long planning block in the morning explains the low
+        count — planning never logs as a task.
+      tone: muted
+      density: compact
+      slots:
+        body:
+          - block: card
+            heading: Read Q1 retrospective draft
+            body: >-
+              Completed at 11:00. Thirty minutes. Comments left inline,
+              nothing blocking.
+            icon: { primitive: icon, name: check-circle }
+            cta: { primitive: action, label: Restore to today, intent: ghost }
+            tone: muted
+          - block: card
+            heading: Onboard new contractor
+            body: >-
+              Completed at 16:45. An hour and a half. Repo access granted,
+              intro call scheduled for Thursday.
+            icon: { primitive: icon, name: check-circle }
+            cta: { primitive: action, label: Restore to today, intent: ghost }
+            tone: muted
+
+    - block: section
+      heading: Friday, May 22 — 3 completed
+      description: >-
+        End of last week. The kind of Friday where everything wraps cleanly
+        and the weekend starts on time.
+      tone: muted
+      density: compact
+      slots:
+        body:
+          - block: card
+            heading: Finalize engineering hiring loop
+            body: >-
+              Completed at 12:00. Three hours across the morning. Loop
+              scheduled with three candidates next week.
+            icon: { primitive: icon, name: check-circle }
+            cta: { primitive: action, label: Restore to today, intent: ghost }
+            tone: muted
+          - block: card
+            heading: Lunch with Maya
+            body: >-
+              Completed at 14:00. Ninety minutes. Not work, but it was on
+              the list — a small reminder that protected the time.
+            icon: { primitive: icon, name: check-circle }
+            cta: { primitive: action, label: Restore to today, intent: ghost }
+            tone: muted
+          - block: card
+            heading: Submit expense report
+            body: >-
+              Completed at 16:00. Twenty minutes. April receipts done — May
+              still has a few outstanding.
+            icon: { primitive: icon, name: check-circle }
+            cta: { primitive: action, label: Restore to today, intent: ghost }
+            tone: muted
+
+  footer:
+    block: cta-bar
+    heading: Nine completed in the last week
+    body: >-
+      A quiet number, by design. focus doesn't reward volume — it reflects
+      what you actually owed yourself.
+    cta:
+      primitive: action
+      label: View by month
+      intent: ghost
+    tone: muted

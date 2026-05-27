@@ -1,0 +1,118 @@
+template: single-column
+
+blocks:
+  - block: hero-text
+    title: A todo list that doesn't demand your attention
+    lead: >-
+      focus keeps one list — today's. No streaks, no celebrations, no
+      points for finishing your work. Open it when you need to know what
+      you committed to. Close it the rest of the time.
+    cta:
+      primitive: action
+      label: Start a 30-day trial
+      intent: primary
+    tone: neutral
+    density: comfortable
+
+  - block: section
+    heading: Principles
+    description: >-
+      The few decisions we made up front, so you don't have to think about
+      them again.
+    tone: neutral
+    slots:
+      body:
+        - block: card
+          heading: Today only
+          body: >-
+            One list, one day. Tomorrow's list builds itself when tomorrow
+            arrives — not when you remember at 11pm that you forgot to
+            prepare it.
+          icon: { primitive: icon, name: sun, size: md }
+          tone: neutral
+        - block: card
+          heading: No notifications
+          body: >-
+            focus never pings you. The list is there when you decide to
+            open it. Your attention belongs to the work, not to the tool
+            that tracks the work.
+          icon: { primitive: icon, name: bell-off, size: md }
+          tone: neutral
+        - block: card
+          heading: Nothing to optimize
+          body: >-
+            No streaks to maintain, no productivity scores, no leaderboard.
+            Finishing a task is its own reward — the app doesn't take
+            credit for what you did.
+          icon: { primitive: icon, name: leaf, size: md }
+          tone: neutral
+
+  - block: section
+    heading: For whom
+    description: >-
+      focus is built for one kind of person and quietly fails for everyone
+      else. Read this before you start the trial.
+    tone: muted
+    density: compact
+    slots:
+      body:
+        - block: card
+          heading: People doing deep work
+          body: >-
+            Writers, researchers, engineers, designers, founders — anyone
+            whose day looks like long stretches of one or two important
+            things, not dozens of tiny tickets.
+          icon: { primitive: icon, name: book-open }
+          tone: neutral
+        - block: card
+          heading: Not for teams
+          body: >-
+            focus is single-user by design. If you need to assign tasks,
+            comment, or share status — Linear and Asana already do that
+            well. We don't compete with them.
+          icon: { primitive: icon, name: user }
+          tone: neutral
+        - block: card
+          heading: Not for life-tracking
+          body: >-
+            No groceries lists, no habit chains, no recurring reminders to
+            drink water. focus is for the work you owe yourself today,
+            nothing more.
+          icon: { primitive: icon, name: minus-circle }
+          tone: neutral
+
+  - block: section
+    heading: What people say
+    description: >-
+      A few words from people who switched to focus after years of heavier
+      tools. Quotes are real, names changed at their request.
+    tone: emphasis
+    slots:
+      body:
+        - block: card
+          heading: Maya, technical writer
+          body: >-
+            "I deleted three apps the day I started using focus. I haven't
+            missed a single feature from any of them. The relief of opening
+            an empty interface every morning is hard to describe."
+          icon: { primitive: icon, name: quote }
+          tone: muted
+        - block: card
+          heading: Jonas, independent researcher
+          body: >-
+            "What sold me was the archive. I can see exactly what I
+            committed to and finished on any given day — no graphs, no
+            scores, just the actual list. That's all I ever wanted."
+          icon: { primitive: icon, name: quote }
+          tone: muted
+
+  - block: cta-bar
+    heading: One list. One day. Thirty days free.
+    body: >-
+      No credit card, no onboarding call, no welcome series. Sign up, write
+      your first task, close the tab.
+    cta:
+      primitive: action
+      label: Start free trial
+      intent: primary
+    tone: emphasis
