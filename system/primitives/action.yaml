@@ -1,0 +1,15 @@
+type: action
+description: Interactive call-to-action — button or link semantics, intent-typed
+
+fields:
+  label:
+    type: string
+    required: true
+    max-length: 40
+  href:
+    type: string
+    max-length: 200
+  intent:
+    type: enum
+    values: [primary, secondary, ghost]
+    required: true

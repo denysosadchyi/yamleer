@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs'
 import { resolve, relative } from 'node:path'
 import yaml from 'js-yaml'
-import Ajv from 'ajv'
-import { ROOT, buildTokensValidators } from './load-schemas.js'
+import Ajv from 'ajv/dist/2020.js'
+import { ROOT, buildTokensValidators, buildPrimitiveValidator } from './load-schemas.js'
 
 const usage = (code = 2) => {
   console.error('Usage: node render/validate.js <path> [--as <schema-name>]')
@@ -31,6 +31,7 @@ const pickSchema = () => {
   }
   const tokensMatch = relPath.match(/^design\/tokens\/([^/]+)\.yaml$/)
   if (tokensMatch) return { kind: 'tokens', sub: tokensMatch[1] }
+  if (relPath.match(/^system\/primitives\/[^/]+\.yaml$/)) return { kind: 'primitive' }
   return null
 }
 
@@ -44,6 +45,7 @@ if (!spec) {
 const ajv = new Ajv({ allErrors: true, strict: false })
 
 let validator
+let label
 if (spec.kind === 'tokens') {
   const validators = buildTokensValidators(ajv)
   validator = validators[spec.sub]
@@ -52,15 +54,18 @@ if (spec.kind === 'tokens') {
     console.error(`Known: ${Object.keys(validators).join(', ')}.`)
     process.exit(2)
   }
+  label = `${spec.kind}.${spec.sub}`
+} else if (spec.kind === 'primitive') {
+  validator = buildPrimitiveValidator(ajv)
+  label = spec.kind
 } else {
-  console.error(`Schema kind "${spec.kind}" not wired in Etap 1.`)
-  console.error('Wired: tokens.{colors,spacing,typography,radius,roles}.')
+  console.error(`Schema kind "${spec.kind}" not wired yet.`)
+  console.error('Wired: tokens.{colors,spacing,typography,radius,roles}, primitive.')
   process.exit(2)
 }
 
 const data = yaml.load(readFileSync(absPath, 'utf8'))
 const ok = validator(data)
-const label = `${spec.kind}.${spec.sub}`
 
 if (ok) {
   console.log(`OK    ${relPath}  validates as ${label}`)

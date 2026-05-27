@@ -1,0 +1,61 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "yamleer://primitive.schema.yaml"
+
+type: object
+required: [type, description, fields]
+additionalProperties: false
+properties:
+  type:
+    $ref: "#/$defs/identifier"
+  description:
+    type: string
+    minLength: 1
+  fields:
+    type: object
+    propertyNames: { $ref: "#/$defs/identifier" }
+    additionalProperties: { $ref: "#/$defs/field-spec" }
+    minProperties: 1
+
+$defs:
+  identifier:
+    type: string
+    pattern: "^[a-z][a-z0-9-]*$"
+
+  field-spec:
+    oneOf:
+      - $ref: "#/$defs/field-string"
+      - $ref: "#/$defs/field-number"
+      - $ref: "#/$defs/field-enum"
+
+  field-string:
+    type: object
+    properties:
+      type: { const: string }
+      required: { type: boolean }
+      max-length: { type: integer, minimum: 1 }
+      min-length: { type: integer, minimum: 0 }
+    required: [type]
+    additionalProperties: false
+
+  field-number:
+    type: object
+    properties:
+      type: { const: number }
+      required: { type: boolean }
+      min: { type: number }
+      max: { type: number }
+    required: [type]
+    additionalProperties: false
+
+  field-enum:
+    type: object
+    properties:
+      type: { const: enum }
+      values:
+        type: array
+        items: { type: string }
+        minItems: 1
+        uniqueItems: true
+      required: { type: boolean }
+    required: [type, values]
+    additionalProperties: false
