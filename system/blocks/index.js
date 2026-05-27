@@ -61,7 +61,14 @@ export const blocks = {
       .map((b) => ctx.renderBlock(b))
       .map((html) => html.split('\n').map((line) => `    ${line}`).join('\n'))
       .join('\n')
-    const bodyFrag = bodyItems ? `\n${bodyItems}\n  ` : ''
+    let bodyFrag
+    if (bodyItems) {
+      bodyFrag = `\n${bodyItems}\n  `
+    } else if (data['empty-state']) {
+      bodyFrag = `\n    <p data-field="empty-state">${escape(data['empty-state'])}</p>\n  `
+    } else {
+      bodyFrag = ''
+    }
     return `<section data-block="section" data-tone="${tone}" data-density="${density}">
   <h2 data-field="heading">${escape(data.heading)}</h2>${descriptionFrag}
   <div data-field="body">${bodyFrag}</div>

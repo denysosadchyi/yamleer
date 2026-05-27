@@ -221,6 +221,20 @@
   gap: var(--spacing-md);
 }
 
+/* Empty-state copy when section.body has zero items. Quiet centered
+   prose, generous vertical air. Reads as a charm note, not an error. */
+[data-block="section"] [data-field="empty-state"] {
+  display: block;
+  padding: var(--spacing-xl) var(--spacing-md);
+  text-align: center;
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+  font-style: italic;
+  margin: 0;
+}
+
 [data-block="section"][data-density="compact"] [data-field="body"] {
   gap: var(--spacing-sm);
 }

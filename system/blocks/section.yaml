@@ -10,13 +10,17 @@ fields:
   description:
     type: string
     max-length: 240
+  empty-state:
+    type: string
+    required: false
+    max-length: 120
 
 slots:
   body:
     allows: [card, setting-row, task-item]
     cardinality: many
     required: true
-    min: 1
+    min: 0
 
 variants:
   tone: { tokenRef: tone }

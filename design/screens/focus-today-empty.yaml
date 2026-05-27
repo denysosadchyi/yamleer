@@ -1,0 +1,52 @@
+template: dashboard-grid
+
+slots:
+  sidebar:
+    block: sidebar-nav
+    brand: focus
+    tone: neutral
+    slots:
+      links:
+        - block: nav-link
+          label: Today
+          href: /screens/focus-today.html
+          current: true
+          count: "0"
+          tone: neutral
+        - block: nav-link
+          label: Archive
+          href: /screens/focus-archive.html
+          current: false
+          tone: neutral
+        - block: nav-link
+          label: Settings
+          href: /screens/focus-settings.html
+          current: false
+          tone: neutral
+
+  header:
+    block: page-header
+    eyebrow: Wednesday · May 27
+    title: Today
+    meta: Nothing scheduled. Twelve hours until tomorrow.
+    action:
+      primitive: action
+      label: + Add task
+      intent: primary
+    tone: neutral
+
+  main:
+    - block: section
+      heading: Up next
+      tone: neutral
+      empty-state: Nothing yet. Write down the first thing you owe yourself today.
+      slots:
+        body: []
+
+    - block: section
+      heading: Done today
+      tone: muted
+      density: compact
+      empty-state: Quiet morning. Things you finish will appear here.
+      slots:
+        body: []
