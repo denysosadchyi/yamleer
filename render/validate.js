@@ -13,6 +13,22 @@ import {
 } from './load-schemas.js'
 import { walkers, findWalker } from './walkers/index.js'
 
+// --- ANSI colors with TTY/NO_COLOR detection ---
+const useColor =
+  !process.env.NO_COLOR &&
+  process.stdout.isTTY &&
+  process.stderr.isTTY
+
+const ansi = (code, s) => useColor ? `\x1b[${code}m${s}\x1b[0m` : s
+const c = {
+  red: (s) => ansi('31', s),
+  green: (s) => ansi('32', s),
+  yellow: (s) => ansi('33', s),
+  cyan: (s) => ansi('36', s),
+  bold: (s) => ansi('1', s),
+  dim: (s) => ansi('2', s),
+}
+
 const usage = (code = 2) => {
   console.error('Usage: node render/validate.js <path> [flags]')
   console.error('  Convention picks schema kind from path; override with --as <kind>[.sub]')
@@ -114,12 +130,19 @@ if (spec.kind === 'tokens') {
 
 const ok = validator(data)
 
+const printPair = (label, value, stream = console.error) => {
+  stream(`    ${c.dim(label.padEnd(9))} ${value}`)
+}
+
 if (!ok) {
-  console.error(`FAIL  ${relPath}  failed validation as ${label}:`)
+  console.error(`${c.red('FAIL')}  ${relPath}  ${c.dim('schema:')} ${label}`)
+  console.error(`        ${validator.errors.length} schema issue(s):`)
   for (const e of validator.errors) {
     const path = e.instancePath || '/'
-    const params = JSON.stringify(e.params)
-    console.error(`      ${path}  ${e.message}  ${params}`)
+    const params = e.params && Object.keys(e.params).length
+      ? c.dim('(' + Object.entries(e.params).map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(', ') + ')')
+      : ''
+    console.error(`    ${c.dim(path.padEnd(36))} ${e.message} ${params}`)
   }
   process.exit(1)
 }
@@ -145,15 +168,20 @@ if (!skipWalkers) {
 }
 
 if (walkerErrors.length === 0) {
-  const tail = skipWalkers ? ' (walkers skipped)' : ''
-  console.log(`OK    ${relPath}  validates as ${label}${tail}`)
+  let tail = ''
+  if (skipWalkers) tail = c.dim(' (walkers skipped)')
+  else if (onlyWalker) tail = c.dim(` (only walker: ${onlyWalker})`)
+  console.log(`${c.green('OK')}    ${relPath}  ${c.dim('schema:')} ${label}${tail}`)
   process.exit(0)
 }
 
-console.error(`FAIL  ${relPath}  ${label}  schema OK, walkers found ${walkerErrors.length} issue(s):`)
+console.error(`${c.red('FAIL')}  ${relPath}  ${c.dim('schema:')} ${label}  ${c.dim('— schema OK, walkers found ' + walkerErrors.length + ' issue(s):')}`)
 for (const e of walkerErrors) {
-  console.error(`  WALKER ${e.walker}`)
-  if (e.path) console.error(`    PATH    ${e.path}`)
-  console.error(`    ${e.message}`)
+  console.error('')
+  console.error(`  ${c.yellow('[' + e.walker + ']')}`)
+  if (e.path)     printPair('PATH:',     e.path)
+  if (e.expected) printPair('EXPECTED:', c.cyan(e.expected))
+  if (e.found)    printPair('FOUND:',    c.red(e.found))
+  if (e.message)  printPair('MESSAGE:',  e.message)
 }
 process.exit(1)

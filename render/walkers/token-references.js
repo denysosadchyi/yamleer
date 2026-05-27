@@ -31,7 +31,9 @@ export function tokenReferences(yamlContent, context) {
       errors.push({
         walker: 'token-references',
         path: path === '' ? '/' : path,
-        message: `unknown token "${name}" — not a key in design/tokens/colors.yaml (${total} known: ${sample}${total > 6 ? ', …' : ''})`,
+        expected: `token ∈ keys of design/tokens/colors.yaml (${total} known: ${sample}${total > 6 ? ', …' : ''})`,
+        found: `token = "${name}"`,
+        message: `unknown token reference`,
       })
     }
   })

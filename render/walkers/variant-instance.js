@@ -56,7 +56,9 @@ function checkTokenRefVariant(blockName, variantName, refKey) {
     errors.push({
       walker: 'variant-instance',
       path,
-      message: `tokenRef "${refKey}" not registered in TOKEN_REF_MAP. Known: ${Object.keys(TOKEN_REF_MAP).sort().join(', ')}`,
+      expected: `tokenRef ∈ ${JSON.stringify(Object.keys(TOKEN_REF_MAP).sort())}`,
+      found: `tokenRef = "${refKey}"`,
+      message: `tokenRef key not registered in TOKEN_REF_MAP`,
     })
     return errors
   }

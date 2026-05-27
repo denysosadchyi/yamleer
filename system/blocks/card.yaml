@@ -6,7 +6,7 @@ fields:
   heading:
     type: string
     required: true
-    max-length: 60
+    max-length: 40
   body:
     type: string
     max-length: 200

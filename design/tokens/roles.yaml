@@ -1,3 +1,8 @@
+# Tone roles — two semantic groups:
+# - neutral, emphasis, muted  → brand expression (marketing content, primary UI surfaces)
+# - danger, success           → behavioral states (alarms, outcomes); used by
+#                               screen-state variants in v0.2 (error/success/empty/loading).
+# MVP screens currently exercise only the brand group.
 tone:
   neutral:
     surface: { token: surface-neutral }

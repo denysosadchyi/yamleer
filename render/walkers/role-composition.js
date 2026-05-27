@@ -53,7 +53,9 @@ function checkTemplate(template, context) {
       errors.push({
         walker: 'role-composition',
         path: locationPath,
-        message: `template scope allows "${blockName}" (role: ${block.role}); only ${JSON.stringify(TEMPLATE_SCOPE_ROLES)} permitted in template-level allows`,
+        expected: `role ∈ ${JSON.stringify(TEMPLATE_SCOPE_ROLES)}`,
+        found: `${blockName}.role = ${block.role}`,
+        message: `template scope cannot allow block of this role`,
       })
     }
   }
@@ -85,7 +87,9 @@ function checkStructuralBlock(block, context) {
         errors.push({
           walker: 'role-composition',
           path: `${blockName}.slots.${slotName}.allows`,
-          message: `structural-block scope allows "${innerName}" (role: ${innerBlock.role}); only ${JSON.stringify(BLOCK_SLOT_SCOPE_ROLES)} permitted in structural-block slot.allows`,
+          expected: `role ∈ ${JSON.stringify(BLOCK_SLOT_SCOPE_ROLES)}`,
+          found: `${innerName}.role = ${innerBlock.role}`,
+          message: `structural-block slot cannot allow block of this role`,
         })
       }
     }
@@ -103,12 +107,14 @@ function checkScreenPlacements(screen, context) {
     const block = context.blocks[placement.block]
     if (!block) continue
 
-    const expected = scope === 'block-slot' ? BLOCK_SLOT_SCOPE_ROLES : TEMPLATE_SCOPE_ROLES
-    if (!expected.includes(block.role)) {
+    const expectedRoles = scope === 'block-slot' ? BLOCK_SLOT_SCOPE_ROLES : TEMPLATE_SCOPE_ROLES
+    if (!expectedRoles.includes(block.role)) {
       errors.push({
         walker: 'role-composition',
         path,
-        message: `placed block "${placement.block}" (role: ${block.role}); slot expects role in ${JSON.stringify(expected)}`,
+        expected: `role ∈ ${JSON.stringify(expectedRoles)}`,
+        found: `${placement.block}.role = ${block.role}`,
+        message: `block placement violates ${scope} role constraint`,
       })
     }
   }
