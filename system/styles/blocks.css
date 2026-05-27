@@ -100,6 +100,60 @@
   margin-top: var(--spacing-sm);
 }
 
+/* ===== Block: page-header =====
+ * App-chrome alternative to hero-text. Quieter, denser, no marketing
+ * "lead" copy slot. Title large but below display-grade. Optional
+ * eyebrow above (small caps, low opacity); optional meta below the
+ * title (single line, dim); optional action floats right at title row. */
+
+[data-block="page-header"] {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto auto;
+  column-gap: var(--spacing-lg);
+  row-gap: var(--spacing-xs);
+  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-lg);
+  border-bottom: 1px solid var(--role-border);
+  align-items: baseline;
+}
+
+[data-block="page-header"] [data-field="eyebrow"] {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  opacity: 0.55;
+  margin: 0;
+}
+
+[data-block="page-header"] [data-field="title"] {
+  grid-column: 1;
+  grid-row: 2;
+  font-size: var(--type-heading-lg-size);
+  line-height: var(--type-heading-lg-leading);
+  font-weight: var(--type-heading-lg-weight);
+  margin: 0;
+}
+
+[data-block="page-header"] [data-field="meta"] {
+  grid-column: 1;
+  grid-row: 3;
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  opacity: 0.7;
+  margin: 0;
+}
+
+[data-block="page-header"] [data-field="action"] {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: center;
+  justify-self: end;
+}
+
 /* ===== Block: section =====
  *
  * Section panel pattern is universal: every section is a visual panel,
@@ -144,6 +198,16 @@
 
 [data-block="section"][data-density="compact"] [data-field="body"] {
   gap: var(--spacing-sm);
+}
+
+/* Row-type atomic blocks (task-item, setting-row) want vertical flow,
+   not grid tiles. When section.body contains one, switch to block flow
+   so rows stack edge-to-edge and their own border-top dividers form
+   the list visual. Cards continue to use the default tile grid. */
+[data-block="section"] [data-field="body"]:has([data-block="task-item"]),
+[data-block="section"] [data-field="body"]:has([data-block="setting-row"]) {
+  display: block;
+  gap: 0;
 }
 
 /* ===== Block: card ===== */
@@ -288,6 +352,115 @@
   }
 }
 
+/* ===== Block: task-item =====
+ * Atomic task row. Lives in section.body next to cards/setting-rows.
+ * Dense, app-like. Custom checkbox left, title dominant, due right,
+ * optional note below title. Done state strikes the title and dims
+ * the row. Priority shows as a thin left border for "high". */
+
+[data-block="task-item"] {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: var(--spacing-md);
+  row-gap: var(--spacing-xs);
+  align-items: baseline;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid var(--role-border);
+  background: var(--role-surface);
+  color: var(--role-text);
+  transition: opacity 120ms ease-out;
+}
+
+[data-block="task-item"]:first-child {
+  border-top: none;
+}
+
+/* Custom checkbox (the button) — circle that fills when done */
+[data-block="task-item"] [data-field="checkbox"] {
+  grid-column: 1;
+  grid-row: 1;
+  width: 1.1rem;
+  height: 1.1rem;
+  padding: 0;
+  border: 1.5px solid var(--role-border);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  align-self: center;
+  transition: background-color 120ms ease-out, border-color 120ms ease-out;
+}
+
+[data-block="task-item"] [data-field="checkbox"]:hover {
+  border-color: var(--role-text);
+}
+
+[data-block="task-item"] [data-field="checkbox"]:focus-visible {
+  outline: 2px solid var(--role-accent);
+  outline-offset: 2px;
+}
+
+[data-block="task-item"][data-done="true"] [data-field="checkbox"] {
+  background: var(--role-primary);
+  border-color: var(--role-primary);
+}
+
+[data-block="task-item"][data-done="true"] [data-field="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.4rem;
+  height: 0.2rem;
+  border-left: 1.5px solid var(--color-text-inverse);
+  border-bottom: 1.5px solid var(--color-text-inverse);
+  transform: translate(-55%, -75%) rotate(-45deg);
+}
+
+[data-block="task-item"] [data-field="title"] {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  font-weight: 500;
+  margin: 0;
+  min-width: 0;
+}
+
+[data-block="task-item"] [data-field="due"] {
+  grid-column: 3;
+  grid-row: 1;
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  font-family: var(--font-mono);
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+[data-block="task-item"] [data-field="note"] {
+  grid-column: 2 / -1;
+  grid-row: 2;
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  opacity: 0.6;
+  margin: 0;
+}
+
+[data-block="task-item"][data-done="true"] [data-field="title"] {
+  text-decoration: line-through;
+  text-decoration-thickness: 0.06em;
+  opacity: 0.5;
+}
+
+[data-block="task-item"][data-done="true"] {
+  opacity: 0.85;
+}
+
+[data-block="task-item"][data-priority="high"] {
+  box-shadow: inset 2px 0 0 var(--color-text-danger);
+}
+
 /* ===== Primitives ===== */
 /* Primitives are leaf elements rendered inside block fields. They inherit
    the surrounding block's --role-* variables for tone-aware coloring. */
@@ -429,4 +602,52 @@
 [data-primitive="toggle"]:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+/* Text-input — inline data-entry field. Default state is a clean
+   bordered input on neutral surface. :focus-visible (and data-state
+   focused for storyboard mockups) shows an accent ring; data-state
+   error swaps to a danger border; disabled dims and locks the cursor. */
+
+[data-primitive="text-input"] {
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 16rem;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--role-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-neutral);
+  color: var(--role-text);
+  font: inherit;
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  transition: border-color 120ms ease-out, box-shadow 120ms ease-out;
+}
+
+[data-primitive="text-input"]::placeholder {
+  color: var(--role-text);
+  opacity: 0.45;
+}
+
+[data-primitive="text-input"]:focus-visible,
+[data-primitive="text-input"][data-state="focused"] {
+  outline: none;
+  border-color: var(--role-accent);
+  box-shadow: 0 0 0 3px oklch(70% 0.18 60 / 0.18);
+}
+
+[data-primitive="text-input"][data-state="error"] {
+  border-color: var(--color-border-danger);
+  color: var(--color-text-danger);
+}
+
+[data-primitive="text-input"][data-state="error"]:focus-visible {
+  box-shadow: 0 0 0 3px oklch(70% 0.15 25 / 0.18);
+}
+
+[data-primitive="text-input"][data-state="disabled"],
+[data-primitive="text-input"]:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: var(--color-surface-muted);
 }
