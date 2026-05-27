@@ -1,0 +1,86 @@
+/* ===== Base ===== */
+/* Typographic foundation. Maps h1–h4, p, small, a to type-* tokens.
+   The :root is intentionally minimal: chrome (storyboard captions,
+   page wrappers) inherits the browser default 16px and the body
+   color/font. Rendered block content gets its OWN local type baseline
+   via [data-block] further down, so screen content is fluid and chrome
+   stays at the information-density size. */
+
+:root {
+  color-scheme: light;
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  /* font-size inherits browser default (~16px) — chrome uses this */
+}
+
+body {
+  background: var(--color-surface-muted);
+}
+
+/* ----- Headings (1:1 mapping to type styles, large → small) ----- */
+
+h1, h2, h3, h4 {
+  margin: 0;
+  text-wrap: balance;
+  color: var(--color-text-primary);
+}
+
+h1 {
+  font-size: var(--type-display-size);
+  font-weight: var(--type-display-weight);
+  line-height: var(--type-display-leading);
+  letter-spacing: var(--type-display-tracking, normal);
+}
+
+h2 {
+  font-size: var(--type-heading-lg-size);
+  font-weight: var(--type-heading-lg-weight);
+  line-height: var(--type-heading-lg-leading);
+}
+
+h3 {
+  font-size: var(--type-heading-md-size);
+  font-weight: var(--type-heading-md-weight);
+  line-height: var(--type-heading-md-leading);
+}
+
+h4 {
+  font-size: var(--type-heading-sm-size);
+  font-weight: var(--type-heading-sm-weight);
+  line-height: var(--type-heading-sm-leading);
+}
+
+/* ----- Body text ----- */
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+small {
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  line-height: var(--type-caption-leading);
+}
+
+/* ----- Links (defensive baseline for chrome; blocks restyle as needed) ----- */
+
+a {
+  color: inherit;
+  text-decoration-thickness: 0.05em;
+  text-underline-offset: 0.2em;
+}
+
+/* ----- Rendered block content: local type baseline -----
+   Every [data-block] sets fluid body type as the local default. Headings
+   inside still pick up their own h1–h4 sizes (specificity unaffected,
+   font-size doesn't inherit through siblings). Chrome outside any
+   [data-block] keeps the system default 16px and is unaffected. */
+
+[data-block] {
+  font-size: var(--type-body-size);
+  font-weight: var(--type-body-weight);
+  line-height: var(--type-body-leading);
+  color: var(--color-text-primary);
+}

@@ -44,6 +44,13 @@ const clampSize = (size, fluidRange) => {
   return `clamp(${minRem}rem, calc(${interceptRem}rem + ${slopeVw}vw), ${maxRem}rem)`
 }
 
+const section = (out, label) => {
+  out.push('')
+  out.push(`  /* ===== ${label} ===== */`)
+}
+
+const prefix = (name) => name.split('-')[0]
+
 const generate = () => {
   const tokens = loadTokens()
   const out = []
@@ -54,37 +61,41 @@ const generate = () => {
   out.push('')
   out.push(':root {')
 
-  // ---- palette ----
-  out.push('  /* palette */')
+  // ---- Palette: subgroup by prefix (surface/text/border/brand) ----
+  section(out, 'Palette')
+  let lastPrefix = null
   for (const [name, value] of Object.entries(tokens.colors)) {
+    const p = prefix(name)
+    if (lastPrefix && p !== lastPrefix) out.push('')
     out.push(`  --color-${name}: ${value};`)
+    lastPrefix = p
   }
 
-  // ---- spacing ----
-  out.push('')
-  out.push('  /* spacing */')
+  // ---- Spacing ----
+  section(out, 'Spacing')
   for (const [name, value] of Object.entries(tokens.spacing)) {
     out.push(`  --spacing-${name}: ${value};`)
   }
 
-  // ---- radius ----
-  out.push('')
-  out.push('  /* radius */')
+  // ---- Radius ----
+  section(out, 'Radius')
   for (const [name, value] of Object.entries(tokens.radius)) {
     out.push(`  --radius-${name}: ${value};`)
   }
 
-  // ---- typography: families ----
-  out.push('')
-  out.push('  /* typography: families */')
+  // ---- Typography families ----
+  section(out, 'Typography — families')
   for (const [name, value] of Object.entries(tokens.typography.family)) {
     out.push(`  --font-${name}: ${value};`)
   }
 
-  // ---- typography: styles (fluid sizes via clamp) ----
-  out.push('')
-  out.push('  /* typography: type styles (size synthesised via clamp from fluid-range) */')
+  // ---- Typography styles: blank line between each style block ----
+  section(out, 'Typography — type styles')
+  out.push('  /* size = clamp(min, calc(intercept + slope·vw), max), synthesised from fluid-range */')
+  let firstStyle = true
   for (const [name, style] of Object.entries(tokens.typography.style)) {
+    if (!firstStyle) out.push('')
+    firstStyle = false
     out.push(`  --type-${name}-size: ${clampSize(style.size, fluid)};`)
     out.push(`  --type-${name}-weight: ${style.weight};`)
     out.push(`  --type-${name}-leading: ${style['line-height']};`)
@@ -93,19 +104,20 @@ const generate = () => {
     }
   }
 
-  // ---- tone roles (palette → tone-set) ----
-  out.push('')
-  out.push('  /* tone roles (resolve to palette via var()) */')
+  // ---- Tone roles (resolve to palette) ----
+  section(out, 'Tone roles')
+  let firstTone = true
   for (const [toneName, toneSpec] of Object.entries(tokens.roles.tone)) {
+    if (!firstTone) out.push('')
+    firstTone = false
     for (const aspect of ['surface', 'text', 'border']) {
       const refName = toneSpec[aspect].token
       out.push(`  --tone-${toneName}-${aspect}: var(--color-${refName});`)
     }
   }
 
-  // ---- color roles ----
-  out.push('')
-  out.push('  /* color roles (brand-level semantic names) */')
+  // ---- Color roles ----
+  section(out, 'Color roles')
   for (const [roleName, roleSpec] of Object.entries(tokens.roles['color-role'])) {
     out.push(`  --role-${roleName}: var(--color-${roleSpec.token});`)
   }
