@@ -16,15 +16,22 @@ block, primitive, or template knowledge — it dispatches.
 render.js
   1. loadContext()                          [reuse load-schemas]
   2. validate every screen file             [reuse validate logic]
-     fail-fast if anything is broken (schema or walker)
+     fail-fast if anything is broken (schema or walker) — ABORT, no partial output
   3. tokensToCss()                          → dist/styles/tokens.css
   4. for each screen in design/screens/:
-       a. pick template renderer (templates[screen.template])
-       b. produce per-screen HTML via renderContext
-       c. write dist/screens/<name>.html (standalone, single-screen)
+       a. resolve template renderer (templates[screen.template])
+       b. build per-screen renderContext (closures bound, currentScreen set)
+       c. produce per-screen HTML via that context
+       d. write dist/screens/<name>.html (standalone, single-screen)
   5. compose dist/index.html (storyboard — inline embedding of all screens)
   6. print summary: N screens rendered, M tokens compiled
 ```
+
+`renderContext` is built **per screen**, not once globally. The MVP may
+look like one shared object (closures don't change per screen at first),
+but per-screen construction is the right shape — it leaves room for
+`ctx.currentScreen` (used in error messages: "in screen X, slot Y, …")
+and for future per-screen render flags without retrofitting.
 
 Each kind of asset lives where its data lives:
 
@@ -127,17 +134,22 @@ exported by name from `system/blocks/index.js`:
 
 Rules every block renderer follows:
 
-- Root element has `data-block="<name>"`.
-- Every variant becomes a `data-<variant>="<value>"` on the root
-  (`data-tone`, `data-density`, …). Defaults are written explicitly
-  rather than omitted, so CSS selectors always have something to match.
-- Every field interpolated as text goes through `ctx.escape`. No
-  exceptions — uniform XSS posture.
-- Field references to primitives go through `ctx.renderPrimitive(ref)`,
-  not inline.
-- Nested-block slots (structural blocks only) iterate over
-  `data.slots[name]` and call `ctx.renderBlock(child)` per item.
-- No `class` attributes. No inline `style`. Selectors hit `data-*` only.
+1. Root element has `data-block="<name>"`.
+2. **Defaults are always written.** A block with no `tone` in the screen
+   YAML still gets `data-tone="neutral"` on output. Same for `density`.
+   Non-negotiable: without explicit defaults, selectors like
+   `[data-block="card"][data-tone="neutral"]` don't match and the
+   neutral-state CSS is silently dead. The default fallback lives in the
+   renderer (`data.tone ?? 'neutral'`), nowhere else.
+3. Variants beyond the default emit as `data-<variant>="<value>"` on the
+   root.
+4. Every field interpolated as text goes through `ctx.escape`. No
+   exceptions — uniform XSS posture.
+5. Field references to primitives go through `ctx.renderPrimitive(ref)`,
+   not inline.
+6. Nested-block slots (structural blocks only) iterate over
+   `data.slots[name]` and call `ctx.renderBlock(child)` per item.
+7. No `class` attributes. No inline `style`. Selectors hit `data-*` only.
 
 **Alternatives.**
 
@@ -181,10 +193,17 @@ where applicable. They do not own visual layout — that lives in
 
 'single-column': (screen, ctx) => `
   <main data-template="single-column">
-    ${(screen.blocks || []).map(b => ctx.renderBlock(b)).join('\n')}
+    <section data-slot="blocks">
+      ${(screen.blocks || []).map(b => ctx.renderBlock(b)).join('\n')}
+    </section>
   </main>
 `,
 ```
+
+Both modes give CSS a uniform target shape: `main[data-template] >
+section[data-slot]`. A sequence template wraps its body in
+`<section data-slot="blocks">` so selectors don't need a mode-specific
+fork (`> *` for sequence vs `> section[data-slot="main"]` for slotted).
 
 **Alternatives.**
 
@@ -218,7 +237,7 @@ Mapping:
 | spacing.yaml      | `--spacing-<name>: <value>`                               |
 | radius.yaml       | `--radius-<name>: <value>`                                |
 | typography.family | `--font-<name>: <stack>`                                  |
-| typography.fluid-range | `--screen-from`, `--screen-to` (informational)       |
+| typography.fluid-range | written as a comment at the top of `tokens.css`; not a runtime custom property |
 | typography.style.<name> | `--type-<name>-size: clamp(<min>px, <interp>, <max>px)` <br> `--type-<name>-weight`, `--type-<name>-leading`, `--type-<name>-tracking` (if letter-spacing present) |
 | roles.tone        | `--tone-<name>-surface`, `-text`, `-border` (resolved to `var(--color-…)`) |
 | roles.color-role  | `--role-<name>: var(--color-<token>)`                     |
@@ -302,17 +321,21 @@ dist/
   <title>yamleer storyboard</title>
 </head>
 <body>
-  <main class="storyboard">
-    <article class="screen-frame" data-screen-id="sample-dashboard">
-      <header class="screen-frame__caption">
-        <span class="screen-frame__name">sample-dashboard</span>
-        <span class="screen-frame__meta">dashboard-grid</span>
+  <main data-storyboard>
+    <article data-screen-frame data-screen-id="sample-dashboard">
+      <header data-frame-caption>
+        <span data-frame-name>sample-dashboard</span>
+        <span data-frame-meta>dashboard-grid · slotted</span>
+        <details data-frame-debug>
+          <summary>debug</summary>
+          <!-- variants / tokens used: empty for MVP, populated later -->
+        </details>
       </header>
-      <div class="screen-frame__body">
+      <div data-frame-body>
         ${ rendered HTML for sample-dashboard }
       </div>
     </article>
-    <article class="screen-frame" data-screen-id="sample-landing">
+    <article data-screen-frame data-screen-id="sample-landing">
       ...
     </article>
   </main>
@@ -320,26 +343,30 @@ dist/
 </html>
 ```
 
-Each `.screen-frame__body` has `container-type: inline-size` so container
+Zero `class` and zero inline `style` throughout — storyboard chrome
+follows the same `data-*` discipline as rendered screen content. The
+principle holds **everywhere**, not just inside the screen body.
+
+Each `[data-frame-body]` has `container-type: inline-size` so container
 queries inside blocks scope to the frame (not the page). This preserves
 per-screen responsive behavior without iframes.
 
 Storyboard CSS (in `system/styles/storyboard.css`):
 
 ```css
-.storyboard {
+[data-storyboard] {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(800px, 1fr));
   gap: 2rem;
   padding: 2rem;
 }
-.screen-frame {
+[data-screen-frame] {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 16px oklch(20% 0.02 250 / 0.08);
   overflow: hidden;
 }
-.screen-frame__body {
+[data-frame-body] {
   container-type: inline-size;
 }
 ```
@@ -366,26 +393,36 @@ bounded.
 
 ---
 
-## Open questions worth flagging before Etap 4 begins
+## Resolved questions (post-review)
 
-These are not decisions I'm making here — they're questions I'd like to
-align on before writing render code:
+1. **`render.js` re-validates.** Defensive guard ~100 ms in exchange for
+   a class of "schema valid but renderer crashes" errors that never
+   occur. Symmetric with how future SwiftUI/Android renderers will also
+   re-validate at their boundary.
 
-1. **Should `render.js` re-validate or trust pre-validation?** Proposal
-   says re-validate (defensive). Alternative: skip and trust the user
-   has run `validate` separately. Trade-off: ~100ms vs. one less guard.
+2. **Render failure aborts the whole build.** Partial output is worse
+   than no output — a storyboard with 4 of 5 screens looks complete to
+   the user. `npm run build` is all-or-nothing; every successful build
+   yields a consistent dist state.
 
-2. **What happens on render failure for one screen?** Abort the whole
-   build, or render the remaining screens and report a partial?
-   Proposal leaning: abort (consistency over partial output).
+3. **`escape` lives in `system/lib/escape.js` as the single source of
+   truth.** Block and primitive renderers import it directly; `ctx`
+   exposes it as a convenience proxy so renderers can write
+   `ctx.escape(x)` or `escape(x)` interchangeably. Symmetric with how
+   walker context provides helpers without owning their implementation.
 
-3. **Where does `escape` live?** Currently sketched inside `ctx`.
-   Alternative: `system/lib/escape.js`, imported by renderers directly
-   (no ctx required). Symmetric with how walkers don't get a `ctx`.
+4. **Caption content for MVP**: `data-frame-name` + `data-frame-meta`
+   (template name + mode) + an empty `<details data-frame-debug>`
+   collapsed by default. The details block is the seam for later
+   debug output (active variants, token references used) without
+   restructuring caption HTML.
 
-4. **`screen-frame__caption` content**: just `<name>` + template, or
-   also list active variants used in the screen? Latter is debug-useful,
-   former is visually quieter. Defer to first render and see.
+## Deferred to day 2+
+
+- **`ctx.escape` lint check.** A small AST or regex scan of
+  `system/blocks/index.js` and `system/primitives/index.js` for
+  `${data.<field>}` interpolations missing `ctx.escape`. Catches the
+  one mistake humans make under pressure. ~30 lines of code.
 
 ---
 
@@ -395,10 +432,12 @@ align on before writing render code:
 both sample screens side-by-side in the grid storyboard. The output:
 
 - Validates AJV + walkers before rendering.
-- Uses zero `class` and zero inline `style`. Selectors are all `data-*`.
+- Uses zero `class` and zero inline `style` **throughout the entire
+  document** — rendered screen content AND storyboard chrome. All
+  selectors hit `data-*` only.
 - Tokens.css contains custom properties for every token (palette, tone,
   role, spacing, radius, typography). Type sizes use `clamp()` from
-  fluid-range.
+  fluid-range. `fluid-range` itself appears only as a header comment.
 - Each screen-frame has independent container-query context.
 - The whole thing reads as one product — `tone` differences are visible
   and tasteful, `density: compact` is perceptibly tighter than
