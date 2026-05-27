@@ -6,9 +6,10 @@ import { readdirSync, readFileSync, writeFileSync, statSync, mkdirSync } from 'n
 import { join, relative, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import yaml from 'js-yaml'
+import { faviconLinks, inlineMark } from '../system/lib/brand.js'
 
 const ROOT = join(fileURLToPath(import.meta.url), '..', '..')
-const OUT  = join(ROOT, 'dist', 'yaml.html')
+const OUT  = join(ROOT, 'dist', 'index.html')
 
 // Groups ordered simplest → most composite:
 //   tokens (raw values) → primitives (atoms) → blocks (composed)
@@ -185,12 +186,17 @@ const wfBlock = (b) => {
 
     case 'section': {
       const cards = (b.slots && b.slots.body) || []
+      // Row-style children (setting-row, task-item) stack vertically;
+      // card-style children fill an auto-fit grid.
+      const stackTypes = new Set(['setting-row', 'task-item'])
+      const useStack = cards.some((c) => c && stackTypes.has(c.block))
+      const layoutClass = useStack ? 'wf-rows' : 'wf-grid'
       return `
       <div class="wf wf-section" data-tone="${tone}" data-density="${density}">
         <span class="wf-tag">section</span>
         ${wfHeading(b.heading)}
         ${wfBody(b.description, 65)}
-        <div class="wf-grid">${cards.map(wfBlock).join('')}</div>
+        <div class="${layoutClass}">${cards.map(wfBlock).join('')}</div>
       </div>`
     }
 
@@ -205,6 +211,56 @@ const wfBlock = (b) => {
           ${b.cta ? wfBtn(b.cta.intent || 'primary', b.cta.label) : ''}
         </div>
       </div>`
+
+    case 'page-header': return `
+      <div class="wf wf-page-header" data-tone="${tone}">
+        <span class="wf-tag">page-header</span>
+        ${b.eyebrow ? wfLine('eyebrow', Math.min(36, widthForLen((b.eyebrow || '').length, 30, 14))) : ''}
+        <div class="wf-row wf-row--baseline">
+          <div class="wf-col">
+            ${wfTitle(b.title)}
+            ${b.meta ? wfBody(b.meta, 70) : ''}
+          </div>
+          ${b.action ? wfBtn(b.action.intent || 'secondary', b.action.label) : ''}
+        </div>
+      </div>`
+
+    case 'setting-row': {
+      const control = b.control || {}
+      let controlEl = ''
+      if (control.primitive === 'toggle') {
+        controlEl = `<div class="wf-toggle" data-on="${!!control.on}" data-state="default"></div>`
+      } else if (control.primitive === 'action') {
+        controlEl = wfBtn(control.intent || 'ghost', control.label)
+      }
+      return `
+      <div class="wf wf-setting-row" data-tone="${tone}">
+        <span class="wf-tag">setting-row</span>
+        <div class="wf-row wf-row--baseline">
+          <div class="wf-col">
+            ${wfHeading(b.label)}
+            ${b.description ? wfBody(b.description, 75) : ''}
+          </div>
+          ${controlEl}
+        </div>
+      </div>`
+    }
+
+    case 'task-item': {
+      const done = !!b.done
+      return `
+      <div class="wf wf-task-item" data-tone="${tone}" data-done="${done}">
+        <span class="wf-tag">task-item</span>
+        <div class="wf-row wf-row--baseline">
+          <div class="wf-check" data-done="${done}"></div>
+          <div class="wf-col">
+            ${wfHeading(b.title)}
+            ${b.note ? wfBody(b.note, 70) : ''}
+          </div>
+          ${b.due ? `<div class="wf-meta" style="width: 48px"></div>` : ''}
+        </div>
+      </div>`
+    }
 
     default:
       return `<div class="wf wf-unknown"><span class="wf-tag">${esc(b.block || '?')}</span></div>`
@@ -336,7 +392,36 @@ const visualizePrimitiveDef = (data) => {
       </div>`).join('')}
     </div>`
   }
-  return `<div class="viz-empty">unknown primitive type</div>`
+  if (type === 'toggle') {
+    return `<div class="wf-specimen wf-specimen--row">
+      ${[
+        { on: false, state: 'default',  label: 'off' },
+        { on: true,  state: 'default',  label: 'on' },
+        { on: true,  state: 'disabled', label: 'disabled' },
+      ].map((s) => `<div class="wf-specimen-item">
+        <div class="wf-toggle" data-on="${s.on}" data-state="${esc(s.state)}"></div>
+        <div class="wf-specimen-label">${esc(s.label)}</div>
+      </div>`).join('')}
+    </div>`
+  }
+  if (type === 'text-input') {
+    const states = data.fields?.state?.values || ['default', 'focused', 'error', 'disabled']
+    return `<div class="wf-specimen wf-specimen--stack">
+      ${states.map((s) => `<div class="wf-specimen-item wf-specimen-item--row">
+        <div class="wf-input" data-state="${esc(s)}"></div>
+        <div class="wf-specimen-label">${esc(s)}</div>
+      </div>`).join('')}
+    </div>`
+  }
+  // Unknown primitive — render a minimal placeholder that at least lists the
+  // schema so the file isn't completely opaque.
+  const fields = data.fields ? Object.entries(data.fields) : []
+  return `<div class="wf-specimen wf-specimen--stack">
+    <div class="def-section-label">no wireframe defined for <code>${esc(type)}</code></div>
+    ${fields.length ? `<div class="def-fields">${fields.map(([k, v]) =>
+      `<div class="def-field"><span class="def-field-name">${esc(k)}</span><span class="def-type">${esc(v?.type || '?')}</span>${v?.required ? ' <span class="def-req">*</span>' : ''}</div>`
+    ).join('')}</div>` : ''}
+  </div>`
 }
 
 // ---------- Visualization: TOKENS (kept) ----------
@@ -499,14 +584,28 @@ for (const g of groups) {
 
 // ---------- Assemble HTML ----------
 
-const navHtml = groups.map((g) => `
-  <section class="nav-group">
-    <h4>${esc(g.label)} <span class="meta">${g.files.length}</span></h4>
-    <ul>
-      ${g.files.map((f) => `<li><a href="#${esc(f.rel.replace(/[\/.]/g, '-'))}">${esc(f.name)}<span class="nav-score">${esc(f.score)}</span></a></li>`).join('')}
-    </ul>
-  </section>
-`).join('')
+// Small groups (templates, screens) stay open. Bulky ones collapse by default.
+const ALWAYS_OPEN = new Set(['templates', 'screens'])
+
+const navHtml = groups.map((g) => {
+  const items = g.files.map((f) =>
+    `<li><a href="#${esc(f.rel.replace(/[\/.]/g, '-'))}">${esc(f.name)}<span class="nav-score">${esc(f.score)}</span></a></li>`
+  ).join('')
+  const openAttr = ALWAYS_OPEN.has(g.label) ? ' open' : ''
+  return `<details class="nav-group"${openAttr}>
+    <summary><h4>${esc(g.label)} <span class="meta">${g.files.length}</span></h4></summary>
+    <ul>${items}</ul>
+  </details>`
+}).join('')
+
+// Per-screen mockup links under the storyboard entry — each opens the
+// rendered HTML in the same overlay iframe used by storyboard/architecture.
+const screensGroup = groups.find((g) => g.label === 'screens')
+const screenLinksHtml = (screensGroup?.files || []).map((f) => {
+  const slug = f.name.replace(/\.ya?ml$/, '')
+  const href = `./screens/${esc(slug)}.html`
+  return `<a href="${href}" class="nav-top-link nav-top-link--sub" data-overlay="${href}">${esc(slug)}</a>`
+}).join('')
 
 const bodyHtml = groups.map((g) => renderGroup(g, g.files)).join('')
 
@@ -519,6 +618,7 @@ const html = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>yamleer — yaml explorer</title>
+${faviconLinks}
 <style>
   :root {
     --bg: #f5f5f1;
@@ -555,17 +655,31 @@ const html = `<!doctype html>
   }
   aside {
     position: sticky; top: 0; align-self: start;
-    height: 100vh; overflow-y: auto;
-    padding: 14px 12px;
+    height: 100vh;
     border-right: 1px solid var(--line);
     background: var(--panel);
     font-size: 12px;
+    display: flex; flex-direction: column;
   }
+  .nav-scroll {
+    flex: 1; overflow-y: auto;
+    padding: 14px 12px 8px;
+  }
+  .nav-foot {
+    padding: 8px 12px 12px;
+    border-top: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .nav-foot .nav-top-link { margin: 0; }
   aside h1 {
     font-size: 13px; margin: 0 0 14px; letter-spacing: 0.05em;
     text-transform: uppercase; color: var(--ink-2);
+    display: grid; grid-template-columns: auto 1fr; column-gap: 8px;
+    align-items: center;
   }
-  aside h1 small { display: block; font-weight: 400; color: var(--ink-3); text-transform: none; letter-spacing: 0; margin-top: 4px; }
+  aside h1 .wordmark { font-size: 13px; }
+  aside h1 .mark { grid-row: span 2; display: inline-flex; }
+  aside h1 small { font-weight: 400; color: var(--ink-3); text-transform: none; letter-spacing: 0; margin-top: 2px; font-size: 10px; }
   .nav-top {
     display: flex; flex-direction: column; gap: 4px;
     margin-bottom: 16px; padding-bottom: 12px;
@@ -577,9 +691,71 @@ const html = `<!doctype html>
     background: var(--bg);
   }
   .nav-top-link:hover { background: var(--accent); color: #fff; }
+  /* Per-screen mockup links — visually nested under storyboard. */
+  .nav-top-link--sub {
+    background: transparent; font-weight: 400; font-size: 11px;
+    padding: 2px 6px 2px 18px;
+    color: var(--ink-2); position: relative;
+  }
+  .nav-top-link--sub::before {
+    content: ""; position: absolute; left: 9px; top: 0; bottom: 0;
+    border-left: 1px dotted var(--line-2);
+  }
+  .nav-top-link--sub:hover { background: var(--bg); color: var(--accent); }
 
-  .nav-group { margin-bottom: 14px; }
-  .nav-group h4 { margin: 0 0 4px; font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; }
+  /* ---- overlay pane (storyboard / architecture inline) ---- */
+  #overlay-pane {
+    position: fixed; top: 0; right: 0; bottom: 0; left: 220px;
+    z-index: 100; background: var(--bg);
+    display: flex; flex-direction: column;
+  }
+  #overlay-pane[hidden] { display: none; }
+  .overlay-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .overlay-title {
+    font-weight: 600; font-size: 13px;
+    text-transform: lowercase; letter-spacing: 0.01em;
+  }
+  .overlay-newtab {
+    margin-left: auto; font-size: 11px;
+    color: var(--accent); text-decoration: none;
+  }
+  .overlay-newtab:hover { text-decoration: underline; }
+  .overlay-close {
+    border: 1px solid var(--line); background: var(--bg);
+    font: inherit; font-size: 18px; line-height: 1; color: var(--ink-2);
+    width: 28px; height: 28px; border-radius: 4px;
+    cursor: pointer; padding: 0;
+  }
+  .overlay-close:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .overlay-frame { flex: 1; border: none; width: 100%; background: #fff; }
+  body.overlay-open { overflow: hidden; }
+
+  .nav-group { margin-bottom: 10px; }
+  .nav-group > summary {
+    list-style: none; cursor: pointer; user-select: none;
+    display: flex; align-items: center; gap: 6px;
+    padding: 2px 6px; border-radius: 3px;
+    margin-bottom: 2px;
+  }
+  .nav-group > summary::-webkit-details-marker { display: none; }
+  .nav-group > summary > h4 {
+    margin: 0; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    display: inline-flex; align-items: baseline; gap: 4px;
+    flex: 1;
+  }
+  .nav-group > summary::after {
+    content: "+"; color: var(--ink-3); font-size: 13px; font-weight: 500;
+    width: 12px; text-align: center; line-height: 1;
+  }
+  .nav-group[open] > summary::after { content: "−"; }
+  .nav-group > summary:hover { background: var(--bg); }
+  .nav-group > summary:hover::after { color: var(--accent); }
   .nav-group ul { list-style: none; margin: 0; padding: 0; }
   .nav-group a {
     display: block; padding: 2px 6px; border-radius: 3px;
@@ -727,6 +903,7 @@ const html = `<!doctype html>
   .wf-line--title   { height: 16px; background: var(--wf-line-3); margin-bottom: 14px; }
   .wf-line--heading { height: 11px; background: var(--wf-line-2); margin-bottom: 10px; }
   .wf-line--body    { height: 6px;  background: var(--wf-line);   margin-bottom: 5px; }
+  .wf-line--eyebrow { height: 5px;  background: var(--wf-line-2); margin-bottom: 10px; opacity: 0.7; }
 
   .wf[data-tone="emphasis"] .wf-line--title   { background: var(--wf-emphasis-line-strong); }
   .wf[data-tone="emphasis"] .wf-line--heading { background: var(--wf-emphasis-line-strong); }
@@ -775,6 +952,43 @@ const html = `<!doctype html>
   }
   .wf[data-density="compact"] .wf-grid { gap: 8px; }
 
+  /* Section children that are row-shaped (setting-row, task-item) stack
+     vertically — auto-fit grids would chop them into awkward columns. */
+  .wf-rows { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+  .wf[data-density="compact"] .wf-rows { gap: 6px; }
+
+  /* Inside a baseline row, button/toggle/check should sit flush with the
+     col content, not pushed down by their own stack-margin. */
+  .wf-row--baseline > .wf-btn,
+  .wf-row--baseline > .wf-toggle,
+  .wf-row--baseline > .wf-check,
+  .wf-row--baseline > .wf-meta { margin-top: 0; flex-shrink: 0; }
+
+  /* setting-row, task-item, page-header use the .wf base; extra targeting
+     only when we need to override default padding for compactness. */
+  .wf-setting-row, .wf-task-item { padding: 18px 14px 14px; }
+  .wf[data-density="compact"] .wf-setting-row,
+  .wf[data-density="compact"] .wf-task-item { padding: 14px 14px 10px; }
+
+  .wf-check {
+    width: 16px; height: 16px; border-radius: 4px;
+    border: 1.5px solid var(--line-2); background: #fff;
+    position: relative;
+  }
+  .wf-check[data-done="true"] {
+    background: var(--accent); border-color: var(--accent);
+  }
+  .wf-check[data-done="true"]::after {
+    content: ""; position: absolute; left: 4px; top: 1px;
+    width: 4px; height: 8px;
+    border: solid #fff; border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+  }
+
+  .wf-meta {
+    height: 6px; background: var(--wf-line); border-radius: 3px;
+  }
+
   .wf-unknown {
     padding: 30px 16px; background: #f5f5f0; border-style: dashed;
     text-align: center; color: var(--ink-3);
@@ -787,13 +1001,52 @@ const html = `<!doctype html>
     gap: 32px; align-items: center; justify-content: center;
     min-height: 100px;
   }
-  .wf-specimen--row { gap: 28px; }
+  .wf-specimen--row   { gap: 28px; }
+  .wf-specimen--stack { flex-direction: column; gap: 12px; align-items: stretch; min-height: 0; }
   .wf-specimen-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .wf-specimen-item--row { flex-direction: row; align-items: center; gap: 12px; justify-content: flex-start; }
   .wf-specimen-label {
     font-size: 10px; color: var(--ink-3); letter-spacing: 0.05em;
     text-transform: uppercase;
   }
   .wf-specimen .wf-btn { margin-top: 0; }
+
+  /* toggle primitive */
+  .wf-toggle {
+    display: inline-block; position: relative;
+    width: 42px; height: 22px;
+    background: #c8c8be; border-radius: 11px;
+    transition: background 0.15s;
+  }
+  .wf-toggle::after {
+    content: ""; position: absolute; top: 2px; left: 2px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.18);
+    transition: transform 0.15s;
+  }
+  .wf-toggle[data-on="true"]          { background: var(--accent); }
+  .wf-toggle[data-on="true"]::after   { transform: translateX(20px); }
+  .wf-toggle[data-state="disabled"]   { opacity: 0.45; }
+
+  /* text-input primitive */
+  .wf-input {
+    display: inline-flex; align-items: center;
+    min-width: 220px; height: 34px;
+    padding: 0 12px;
+    background: #fff;
+    border: 1.5px solid var(--line-2); border-radius: 4px;
+  }
+  .wf-input::before {
+    content: ""; height: 6px; width: 60%;
+    background: var(--line-2); border-radius: 2px;
+  }
+  .wf-input[data-state="focused"] {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(42,95,184,0.18);
+  }
+  .wf-input[data-state="error"]    { border-color: #b1432b; background: #fff8f6; }
+  .wf-input[data-state="error"]::before { background: #b1432b; }
+  .wf-input[data-state="disabled"] { background: #f3f3ee; opacity: 0.55; }
 
   /* ---- tokens ---- */
   .swatches {
@@ -875,17 +1128,94 @@ const html = `<!doctype html>
 </head>
 <body>
 <aside>
-  <h1>yamleer<small>yaml explorer · ${esc(totalFiles)} files</small></h1>
-  <nav class="nav-top">
-    <a href="./architecture.html" class="nav-top-link">↗ how it works</a>
-    <a href="./index.html" class="nav-top-link">↗ storyboard</a>
-  </nav>
-  ${navHtml}
+  <div class="nav-scroll">
+    <h1><span class="mark">${inlineMark(28)}</span><span class="wordmark">yamleer</span><small>yaml explorer · ${esc(totalFiles)} files</small></h1>
+    <nav class="nav-top">
+      <a href="./storyboard.html" class="nav-top-link" data-overlay="./storyboard.html">↗ storyboard</a>
+      ${screenLinksHtml}
+    </nav>
+    ${navHtml}
+  </div>
+  <div class="nav-foot">
+    <a href="./architecture.html" class="nav-top-link" data-overlay="./architecture.html">↗ how it works</a>
+  </div>
 </aside>
 <main>
   ${bodyHtml}
-  <footer>Generated ${esc(generatedAt)} · <a href="./architecture.html">how it works</a> · <a href="./index.html">storyboard</a></footer>
+  <footer>Generated ${esc(generatedAt)} · <a href="./architecture.html">how it works</a> · <a href="./storyboard.html">storyboard</a></footer>
 </main>
+
+<aside id="overlay-pane" hidden>
+  <header class="overlay-bar">
+    <span class="overlay-title"></span>
+    <a class="overlay-newtab" target="_blank" rel="noopener">open in new tab ↗</a>
+    <button class="overlay-close" aria-label="close">×</button>
+  </header>
+  <iframe class="overlay-frame" src="about:blank"></iframe>
+</aside>
+
+<script>
+  (() => {
+    const overlay = document.getElementById('overlay-pane');
+    const frame   = overlay.querySelector('.overlay-frame');
+    const title   = overlay.querySelector('.overlay-title');
+    const newtab  = overlay.querySelector('.overlay-newtab');
+    const open = (url, label) => {
+      frame.src = url;
+      title.textContent = label;
+      newtab.href = url;
+      overlay.hidden = false;
+      document.body.classList.add('overlay-open');
+    };
+    const close = () => {
+      overlay.hidden = true;
+      frame.src = 'about:blank';
+      document.body.classList.remove('overlay-open');
+    };
+    document.querySelectorAll('[data-overlay]').forEach((a) => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        open(a.dataset.overlay, a.textContent.replace(/^↗\\s*/, ''));
+      });
+    });
+    overlay.querySelector('.overlay-close').addEventListener('click', close);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !overlay.hidden) close();
+    });
+
+    // Sidebar yaml-file links navigate to in-page anchors. With the overlay
+    // open they look broken (you can't see the file). Close overlay on click
+    // so the anchor scroll lands on a visible target.
+    document.querySelectorAll('aside .nav-group a[href^="#"]').forEach((a) => {
+      a.addEventListener('click', () => {
+        if (!overlay.hidden) close();
+      });
+    });
+
+    // The architecture diagram (loaded inside the overlay iframe) navigates
+    // the top window via target=_top to anchors like /#g-tokens. The browser
+    // updates the URL hash and tries to scroll the body — but the overlay
+    // covers everything, so the scroll lands behind it. Listen for hash
+    // changes and close the overlay; then re-trigger the scroll so the
+    // target section is actually visible.
+    window.addEventListener('hashchange', () => {
+      if (!overlay.hidden) close();
+      const id = location.hash.slice(1);
+      if (id) {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    // On first visit (no hash), jump to focus-today.yaml — the production
+    // primary screen. User can still hit ./storyboard.html overlay manually
+    // via the storyboard nav link.
+    if (!location.hash) {
+      location.hash = 'design-screens-focus-today-yaml';
+    }
+  })();
+</script>
+
 <script>
   document.querySelectorAll('.toggle').forEach((btn) => {
     btn.addEventListener('click', () => {

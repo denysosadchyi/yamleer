@@ -7,6 +7,7 @@
 import { readdirSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { join, relative, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { faviconLinks, inlineMark } from '../system/lib/brand.js'
 
 const ROOT = join(fileURLToPath(import.meta.url), '..', '..')
 const OUT  = join(ROOT, 'dist', 'architecture.html')
@@ -33,7 +34,11 @@ const yamlAnchor = (relPath) => relPath.replace(/[\/.]/g, '-')
 
 const fileLink = (dir, name, dest = 'yaml') => {
   const rel = `${dir}/${name}`
-  if (dest === 'yaml') return `<a href="./yaml.html#${esc(yamlAnchor(rel))}">${esc(name)}</a>`
+  // Target _top so links navigate the outer window when this page is loaded
+  // inside the explorer's overlay iframe — otherwise the explorer nests
+  // itself recursively. Anchor goes straight to ./ (the explorer); the old
+  // ./yaml.html shim dropped the hash on its meta-refresh redirect.
+  if (dest === 'yaml') return `<a href="./#${esc(yamlAnchor(rel))}" target="_top">${esc(name)}</a>`
   return esc(name)
 }
 
@@ -61,6 +66,7 @@ const html = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>yamleer — how it works</title>
+${faviconLinks}
 <style>
   :root {
     --bg: #f5f5f1;
@@ -87,22 +93,10 @@ const html = `<!doctype html>
     border-bottom: 1px solid var(--line);
     padding-bottom: 24px; margin-bottom: 32px;
   }
-  h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.02em;
+       display: inline-flex; align-items: center; gap: 12px; }
+  h1 .mark { display: inline-flex; }
   .tagline { color: var(--ink-2); margin: 0 0 18px; font-size: 14px; }
-
-  .cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
-  .cta {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 18px; border-radius: 4px;
-    text-decoration: none; font-weight: 600; font-size: 13px;
-    border: 1.5px solid var(--ink);
-    background: var(--ink); color: #fff;
-  }
-  .cta:hover { background: #000; }
-  .cta--ghost { background: transparent; color: var(--ink); }
-  .cta--ghost:hover { background: var(--ink); color: #fff; }
-  .cta--accent { background: var(--accent); border-color: var(--accent); }
-  .cta--accent:hover { background: #1e4a93; border-color: #1e4a93; }
 
   /* ---- section title ---- */
   h2.section {
@@ -256,22 +250,68 @@ const html = `<!doctype html>
   }
   .mermaid[data-processed="true"] { visibility: visible; }
   .mermaid svg { max-width: 100%; height: auto !important; }
+  /* Mermaid wraps click-href nodes in <a> — make the whole node feel clickable
+     and brighten its fill on hover so the affordance reads at a glance. */
+  .mermaid svg a { cursor: pointer; text-decoration: none; }
+  .mermaid svg a:hover .node rect,
+  .mermaid svg a:hover .node polygon,
+  .mermaid svg a:hover .node circle,
+  .mermaid svg a:hover .node path { filter: brightness(0.96); }
+  .mermaid svg a:focus { outline: none; }
+  .mermaid svg a:focus .node rect,
+  .mermaid svg a:focus .node polygon { stroke-width: 2.5px; }
   .diagram-note {
     font-size: 11px; color: var(--ink-3);
     text-align: center; margin: 6px 0 24px;
   }
+
+  /* diagram legend */
+  .legend {
+    display: flex; flex-wrap: wrap;
+    gap: 8px 22px;
+    padding: 12px 16px;
+    background: var(--bg); border: 1px solid var(--line); border-radius: 4px;
+    font-size: 11px; color: var(--ink-2);
+    margin: 8px 0 24px;
+  }
+  .legend-item { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .legend-box {
+    width: 28px; height: 18px;
+    border: 1.5px solid #1a1a1a; background: #fff; border-radius: 3px;
+  }
+  .legend-box--linkable {
+    border-color: #2a5fb8; background: #eaf1fb;
+  }
+  .legend-circle {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid #b1432b; background: #fff3f0; color: #b1432b;
+  }
+  .legend-arrow {
+    position: relative; width: 36px; height: 8px;
+    display: inline-block;
+  }
+  .legend-arrow::before {
+    content: ""; position: absolute; left: 0; right: 6px; top: 50%;
+    border-top: 1.5px solid #555;
+  }
+  .legend-arrow::after {
+    content: ""; position: absolute; right: 0; top: 50%;
+    margin-top: -4px;
+    width: 0; height: 0;
+    border-left: 6px solid #555;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+  }
+  .legend-arrow--thick::before { border-top-width: 3.5px; }
+  .legend-arrow--dashed::before { border-top-style: dashed; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <header class="hero">
-  <h1>yamleer</h1>
+  <h1><span class="mark">${inlineMark(36)}</span>yamleer</h1>
   <p class="tagline">A YAML-first design pipeline. Five stages from authoring intent to static HTML — no JS runtime, no design tool, no manual sync.</p>
-  <div class="cta-row">
-    <a class="cta cta--accent" href="./yaml.html">Browse YAML structures →</a>
-    <a class="cta cta--ghost" href="./index.html">View rendered screens →</a>
-  </div>
 </header>
 
 <h2 class="section">Pipeline · diagram</h2>
@@ -279,7 +319,7 @@ const html = `<!doctype html>
   <pre class="mermaid">
 flowchart TD
     classDef stage fill:#fff,stroke:#1a1a1a,stroke-width:1.5px,color:#1a1a1a
-    classDef ok fill:#e3f1e6,stroke:#1a7f37,color:#1a7f37
+    classDef ok    fill:#e3f1e6,stroke:#1a7f37,color:#1a7f37
     classDef abort fill:#fff3f0,stroke:#b1432b,color:#b1432b
 
     subgraph S1 [" 1 · AUTHOR — design/ "]
@@ -310,11 +350,19 @@ flowchart TD
       direction TB
       DCS["styles/<br/>tokens.css + statics"]:::stage
       DSH["screens/*.html"]:::stage
-      DIX["index.html<br/>(storyboard)"]:::stage
+      DIX["storyboard.html"]:::stage
     end
 
     ERR(("abort")):::abort
 
+    %% one invisible rank edge between adjacent subgraphs — leaves
+    %% each subgraph free to stack its own nodes vertically (TB)
+    SCR ~~~ PRI
+    WLK ~~~ VAL
+    VAL ~~~ T2C
+    RND ~~~ DCS
+
+    %% real data flow
     TOK --> T2C
     SCR --> VAL
     PRI --> VAL
@@ -322,8 +370,8 @@ flowchart TD
     TPL --> VAL
     SCH --> VAL
     WLK --> VAL
-    VAL -.->|"on error"| ERR
-    VAL ==>|"pass"| RND
+    VAL -.->|on error| ERR
+    VAL ==>|pass| RND
     PRI --> RND
     BLK --> RND
     TPL --> RND
@@ -332,15 +380,25 @@ flowchart TD
     RND --> DSH
     RND --> DIX
 
-    click TOK "./yaml.html#g-tokens" "Browse token YAML"
-    click SCR "./yaml.html#g-screens" "Browse screen YAML"
-    click PRI "./yaml.html#g-primitives" "Browse primitives"
-    click BLK "./yaml.html#g-blocks" "Browse blocks"
-    click TPL "./yaml.html#g-templates" "Browse templates"
-    click DIX "./index.html" "Open storyboard"
+    click TOK href "./#g-tokens" "Browse token YAML" _top
+    click SCR href "./#g-screens" "Browse screen YAML" _top
+    click PRI href "./#g-primitives" "Browse primitives" _top
+    click BLK href "./#g-blocks" "Browse blocks" _top
+    click TPL href "./#g-templates" "Browse templates" _top
+    click DIX href "./storyboard.html" "Open storyboard" _top
+
+    classDef linkable fill:#eaf1fb,stroke:#2a5fb8,stroke-width:1.5px,color:#1a3e7d
+    class TOK,SCR,PRI,BLK,TPL,DIX linkable
   </pre>
 </div>
-<p class="diagram-note">▸ click any colored node to jump into the yaml explorer</p>
+<div class="legend">
+  <span class="legend-item"><span class="legend-box"></span>stage / file</span>
+  <span class="legend-item"><span class="legend-box legend-box--linkable"></span>clickable — opens in YAML explorer</span>
+  <span class="legend-item"><span class="legend-circle"></span>build aborts</span>
+  <span class="legend-item"><span class="legend-arrow"></span>data flow</span>
+  <span class="legend-item"><span class="legend-arrow legend-arrow--thick"></span>validation pass</span>
+  <span class="legend-item"><span class="legend-arrow legend-arrow--dashed"></span>error / bypass</span>
+</div>
 
 <h2 class="section">Pipeline · walkthrough</h2>
 
@@ -423,7 +481,7 @@ flowchart TD
       </div>
       <div class="stage-script">
         <code>render/render.js</code>
-        <span class="stage-script-desc">design/screens/*.yaml + system/* → dist/screens/*.html + dist/index.html (storyboard)</span>
+        <span class="stage-script-desc">design/screens/*.yaml + system/* → dist/screens/*.html + dist/storyboard.html</span>
       </div>
     </div>
   </div>
@@ -451,16 +509,16 @@ flowchart TD
         <span class="files-count">${screens.length}</span>
         <ul class="files-list">${screens.map((f) => {
           const id = f.replace(/\.yaml$/, '')
-          return `<li><a href="./screens/${esc(id)}.html">${esc(id)}.html</a></li>`
+          return `<li><a href="./screens/${esc(id)}.html" target="_top">${esc(id)}.html</a></li>`
         }).join('')}</ul>
       </div>
       <div class="files-row">
         <span class="files-label">dist/</span>
         <span class="files-count">3</span>
         <ul class="files-list">
-          <li><a href="./index.html">index.html</a> <em>storyboard</em></li>
-          <li><a href="./yaml.html">yaml.html</a> <em>structure explorer</em></li>
-          <li><a href="./architecture.html">architecture.html</a> <em>this page</em></li>
+          <li><a href="./" target="_top">index.html</a> <em>yaml explorer (home)</em></li>
+          <li><a href="./storyboard.html" target="_top">storyboard.html</a> <em>rendered screens</em></li>
+          <li><a href="./architecture.html" target="_top">architecture.html</a> <em>this page</em></li>
         </ul>
       </div>
     </div>
@@ -487,11 +545,14 @@ flowchart TB
     TOK2 -.->|"also referenced directly"| BLK2
     TOK2 -.->|"via roles/tone"| SCR2
 
-    click TOK2 "./yaml.html#g-tokens" "Browse tokens"
-    click PRI2 "./yaml.html#g-primitives" "Browse primitives"
-    click BLK2 "./yaml.html#g-blocks" "Browse blocks"
-    click TPL2 "./yaml.html#g-templates" "Browse templates"
-    click SCR2 "./yaml.html#g-screens" "Browse screens"
+    click TOK2 href "./#g-tokens" "Browse tokens" _top
+    click PRI2 href "./#g-primitives" "Browse primitives" _top
+    click BLK2 href "./#g-blocks" "Browse blocks" _top
+    click TPL2 href "./#g-templates" "Browse templates" _top
+    click SCR2 href "./#g-screens" "Browse screens" _top
+
+    classDef linkable fill:#eaf1fb,stroke:#2a5fb8,stroke-width:1.5px,color:#1a3e7d
+    class TOK2,PRI2,BLK2,TPL2,SCR2 linkable
   </pre>
 </div>
 <p class="diagram-note">▸ solid arrows = direct composition · dotted = cross-cutting token references</p>
@@ -529,8 +590,8 @@ flowchart TB
 
 <footer>
   <nav>
-    <a href="./yaml.html">YAML explorer</a>
-    <a href="./index.html">Storyboard</a>
+    <a href="./" target="_top">YAML explorer</a>
+    <a href="./storyboard.html" target="_top">Storyboard</a>
   </nav>
   <span>Generated ${esc(generatedAt)}</span>
 </footer>
@@ -545,7 +606,7 @@ flowchart TB
     theme: 'base',
     themeVariables: {
       fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-      fontSize: '13px',
+      fontSize: '15px',
       primaryColor: '#ffffff',
       primaryTextColor: '#1a1a1a',
       primaryBorderColor: '#1a1a1a',
@@ -558,6 +619,19 @@ flowchart TB
     },
     flowchart: { curve: 'basis', padding: 16, htmlLabels: true },
   });
+
+  // Defensive: Mermaid v11 writes click-href anchors with xlink:href and
+  // accepts a target as the 4th click-arg, but we set target=_top here too
+  // so the links keep escaping the explorer overlay iframe even if the
+  // Mermaid syntax changes upstream.
+  const promoteLinks = () => {
+    document.querySelectorAll('.mermaid svg a').forEach((a) => {
+      if (a.getAttribute('target') !== '_top') a.setAttribute('target', '_top');
+    });
+  };
+  const obs = new MutationObserver(promoteLinks);
+  obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => { promoteLinks(); obs.disconnect(); }, 3000);
 </script>
 </body>
 </html>

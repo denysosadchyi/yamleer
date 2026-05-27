@@ -9,7 +9,7 @@
 //      under http server rooted at dist/)
 //   5. For each validated screen: template renderer → standalone HTML →
 //      dist/screens/<id>.html
-//   6. Compose storyboard → dist/index.html
+//   6. Compose storyboard → dist/storyboard.html
 //   7. Print friendly summary
 //
 // Single entry point for `npm run build`. Reuses validator.validatePath()
@@ -24,6 +24,7 @@ import { templates } from '../system/templates/index.js'
 import { blocks } from '../system/blocks/index.js'
 import { primitives } from '../system/primitives/index.js'
 import { escape } from '../system/lib/escape.js'
+import { faviconLinks, inlineMark } from '../system/lib/brand.js'
 
 const PROJECT_NAME = 'yamleer'
 const BUILD_TS = Date.now()
@@ -149,6 +150,7 @@ const standaloneHtml = (id, templateName, mainHtml) => `<!doctype html>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escape(id)} — ${PROJECT_NAME}</title>
+  ${faviconLinks}
   <link rel="stylesheet" href="../styles/tokens.css?v=${BUILD_TS}">
   <link rel="stylesheet" href="../styles/reset.css?v=${BUILD_TS}">
   <link rel="stylesheet" href="../styles/base.css?v=${BUILD_TS}">
@@ -176,7 +178,7 @@ for (const r of results) {
   rendered.push({ id, templateName, mainHtml, bytes: html.length })
 }
 
-// ---------- 6. storyboard composition → dist/index.html ----------
+// ---------- 6. storyboard composition → dist/storyboard.html ----------
 
 const context = loadContext()
 
@@ -208,6 +210,7 @@ const storyboardHtml = `<!doctype html>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${PROJECT_NAME} storyboard</title>
+  ${faviconLinks}
   <link rel="stylesheet" href="./styles/tokens.css?v=${BUILD_TS}">
   <link rel="stylesheet" href="./styles/reset.css?v=${BUILD_TS}">
   <link rel="stylesheet" href="./styles/base.css?v=${BUILD_TS}">
@@ -222,7 +225,7 @@ ${storyboardBody}
 </html>
 `
 
-const storyboardPath = join(distDir, 'index.html')
+const storyboardPath = join(distDir, 'storyboard.html')
 writeFileSync(storyboardPath, storyboardHtml)
 
 // ---------- 7. friendly success summary ----------
