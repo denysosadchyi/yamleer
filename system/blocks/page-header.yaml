@@ -1,0 +1,25 @@
+type: page-header
+description: App-chrome header — title with optional eyebrow and inline action
+role: leaf
+
+fields:
+  title:
+    type: string
+    required: true
+    max-length: 80
+  eyebrow:
+    type: string
+    required: false
+    max-length: 40
+  meta:
+    type: string
+    required: false
+    max-length: 80
+  action:
+    type: ref
+    ref-kind: primitive
+    ref-type: action
+    required: false
+
+variants:
+  tone: { tokenRef: tone }

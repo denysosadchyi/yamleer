@@ -95,6 +95,47 @@ export const blocks = {
 </article>`
   },
 
+  // Page-header — app chrome header (replaces hero-text for product
+  // screens). Title is large but not display-grade; optional eyebrow sits
+  // above it for context ("Today" / "Archive"); optional meta sits below;
+  // optional action floats right.
+  'page-header': (data, ctx) => {
+    const tone = escape(data.tone ?? 'neutral')
+    const eyebrowFrag = data.eyebrow
+      ? `\n  <p data-field="eyebrow">${escape(data.eyebrow)}</p>`
+      : ''
+    const metaFrag = data.meta
+      ? `\n  <p data-field="meta">${escape(data.meta)}</p>`
+      : ''
+    const actionFrag = data.action
+      ? `\n  <div data-field="action">${ctx.renderPrimitive(data.action)}</div>`
+      : ''
+    return `<article data-block="page-header" data-tone="${tone}">${eyebrowFrag}
+  <h1 data-field="title">${escape(data.title)}</h1>${metaFrag}${actionFrag}
+</article>`
+  },
+
+  // Task-item — atomic task row. Lives in section.body. Renders as a
+  // button (aria-pressed via data-done) so the whole row is clickable
+  // to toggle done. Title is the dominant element; due / priority / note
+  // are subordinate meta.
+  'task-item': (data, ctx) => {
+    const tone = escape(data.tone ?? 'neutral')
+    const done = data.done === true
+    const priorityAttr = data.priority
+      ? ` data-priority="${escape(data.priority)}"` : ''
+    const dueFrag = data.due
+      ? `\n  <span data-field="due">${escape(data.due)}</span>`
+      : ''
+    const noteFrag = data.note
+      ? `\n  <p data-field="note">${escape(data.note)}</p>`
+      : ''
+    return `<article data-block="task-item" data-tone="${tone}" data-done="${done}"${priorityAttr}>
+  <button type="button" data-field="checkbox" aria-pressed="${done}" aria-label="Mark complete: ${escape(data.title)}"></button>
+  <h3 data-field="title">${escape(data.title)}</h3>${dueFrag}${noteFrag}
+</article>`
+  },
+
   // Setting-row — atomic block for a labeled control (toggle or action).
   // Two-column grid: label-group left, control right. Container query in
   // CSS stacks vertically below 500px.
