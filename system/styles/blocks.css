@@ -112,7 +112,7 @@
   grid-template-rows: auto auto auto;
   column-gap: var(--spacing-lg);
   row-gap: var(--spacing-xs);
-  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-md);
   border-bottom: 1px solid var(--role-border);
   align-items: baseline;
 }
@@ -179,7 +179,7 @@
 
 [data-block="section"] [data-field="heading"] {
   font-size: var(--type-heading-md-size);
-  font-weight: var(--type-heading-md-weight);
+  font-weight: 500;
   line-height: var(--type-heading-md-leading);
 }
 
@@ -304,6 +304,10 @@
 
 [data-block="setting-row"]:first-child {
   border-top: none;
+}
+
+[data-block="setting-row"]:hover {
+  background: var(--color-surface-muted);
 }
 
 [data-block="setting-row"] [data-field="label-group"] {
@@ -458,7 +462,15 @@
 }
 
 [data-block="task-item"][data-priority="high"] {
-  box-shadow: inset 2px 0 0 var(--color-text-danger);
+  box-shadow: inset 1.5px 0 0 var(--color-text-danger);
+}
+
+[data-block="task-item"]:hover {
+  background: var(--color-surface-muted);
+}
+
+[data-block="task-item"][data-done="true"]:hover {
+  background: var(--color-surface-muted);
 }
 
 /* ===== Primitives ===== */
