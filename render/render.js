@@ -17,7 +17,7 @@
 
 import { readdirSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs'
 import { resolve, join, basename } from 'node:path'
-import { ROOT } from './load-schemas.js'
+import { ROOT, loadContext } from './load-schemas.js'
 import { validatePath } from './validator.js'
 import { generate as generateTokensCss } from './tokens-to-css.js'
 import { templates } from '../system/templates/index.js'
@@ -176,21 +176,94 @@ for (const r of results) {
   rendered.push({ id, templateName, mainHtml, bytes: html.length })
 }
 
-// ---------- 6, 7 placeholder ----------
-//
-// Storyboard composition and friendly summary next. For now, report
-// what we wrote.
+// ---------- 6. storyboard composition → dist/index.html ----------
 
-console.log(`${c.green('✓')} CSS:     ${copiedCss.length} static + tokens.css (${tokensResult.lines} lines)`)
-for (const name of copiedCss) {
-  console.log(`  ${c.dim('dist/styles/' + name)}`)
+const context = loadContext()
+
+const indent = (s, n) =>
+  s.split('\n').map((line) => ' '.repeat(n) + line).join('\n')
+
+const renderFrame = (r) => {
+  const templateDef = context.templates[r.templateName]
+  const mode = templateDef ? templateDef.mode : 'unknown'
+  return `  <article data-screen-frame data-screen-id="${escape(r.id)}">
+    <header data-frame-caption>
+      <span data-frame-name>${escape(r.id)}</span>
+      <span data-frame-meta>${escape(r.templateName)} · ${escape(mode)}</span>
+      <details data-frame-debug>
+        <summary>debug</summary>
+      </details>
+    </header>
+    <div data-frame-body>
+${indent(r.mainHtml, 6)}
+    </div>
+  </article>`
 }
-console.log(`  ${c.dim('dist/styles/tokens.css')}  ${c.dim('(' + tokensResult.bytes + ' B, generated)')}`)
-console.log('')
-console.log(`${c.green('✓')} Screens: ${rendered.length} standalone HTML files`)
-for (const r of rendered) {
-  const rel = `dist/screens/${r.id}.html`
-  console.log(`  ${c.dim(rel.padEnd(36))} ${r.templateName}  ${c.dim('(' + r.bytes + ' B)')}`)
+
+const storyboardBody = rendered.map(renderFrame).join('\n')
+
+const storyboardHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${PROJECT_NAME} storyboard</title>
+  <link rel="stylesheet" href="./styles/tokens.css?v=${BUILD_TS}">
+  <link rel="stylesheet" href="./styles/reset.css?v=${BUILD_TS}">
+  <link rel="stylesheet" href="./styles/base.css?v=${BUILD_TS}">
+  <link rel="stylesheet" href="./styles/blocks.css?v=${BUILD_TS}">
+  <link rel="stylesheet" href="./styles/storyboard.css?v=${BUILD_TS}">
+</head>
+<body>
+<main data-storyboard>
+${storyboardBody}
+</main>
+</body>
+</html>
+`
+
+const storyboardPath = join(distDir, 'index.html')
+writeFileSync(storyboardPath, storyboardHtml)
+
+// ---------- 7. friendly success summary ----------
+
+const walkData = (node, cb) => {
+  if (!node || typeof node !== 'object') return
+  cb(node)
+  if (Array.isArray(node)) {
+    for (const item of node) walkData(item, cb)
+  } else {
+    for (const v of Object.values(node)) walkData(v, cb)
+  }
 }
+
+const blocksUsed = new Set()
+const primitivesUsed = new Set()
+const templatesUsed = new Set()
+for (const r of results) {
+  templatesUsed.add(r.data.template)
+  walkData(r.data, (node) => {
+    if (typeof node.block === 'string') blocksUsed.add(node.block)
+    if (typeof node.primitive === 'string') primitivesUsed.add(node.primitive)
+  })
+}
+
+const counts = {
+  colors:    Object.keys(context.tokens.colors).length,
+  spacing:   Object.keys(context.tokens.spacing).length,
+  radius:    Object.keys(context.tokens.radius).length,
+  fonts:     Object.keys(context.tokens.typography.family).length,
+  typeStyle: Object.keys(context.tokens.typography.style).length,
+  tones:     Object.keys(context.tokens.roles.tone).length,
+  colorRoles: Object.keys(context.tokens.roles['color-role']).length,
+}
+
+console.log(`${c.green('✓')} Build complete`)
 console.log('')
-console.log(c.dim('  (steps 6.5 [storyboard], 6.6 [summary] pending)'))
+console.log(`  ${c.bold(rendered.length.toString().padStart(3))} screens rendered  ${c.dim('(' + [...templatesUsed].sort().join(', ') + ')')}`)
+console.log(`  ${c.bold(blocksUsed.size.toString().padStart(3))} blocks used       ${c.dim('(' + [...blocksUsed].sort().join(', ') + ')')}`)
+console.log(`  ${c.bold(primitivesUsed.size.toString().padStart(3))} primitives used   ${c.dim('(' + [...primitivesUsed].sort().join(', ') + ')')}`)
+console.log(`  ${c.bold('   ')} tokens compiled   ${c.dim(`${counts.colors} colors · ${counts.spacing} spacing · ${counts.radius} radius · ${counts.fonts} fonts · ${counts.typeStyle} type styles · ${counts.tones} tones · ${counts.colorRoles} color roles`)}`)
+console.log('')
+console.log(`  ${c.dim('Output: ')} dist/`)
+console.log(`  ${c.dim('Serve:  ')} npm run serve  ${c.dim('→')}  http://localhost:8000`)

@@ -6,7 +6,10 @@
   "description": "yaml-first design pipeline",
   "scripts": {
     "validate": "node render/validate.js",
-    "tokens": "node render/tokens-to-css.js"
+    "tokens": "node render/tokens-to-css.js",
+    "render": "node render/render.js",
+    "build": "node render/render.js",
+    "serve": "python3 -m http.server 8000 -d dist"
   },
   "dependencies": {
     "ajv": "^8.17.1",
