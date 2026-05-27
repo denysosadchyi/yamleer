@@ -83,13 +83,22 @@ export const buildBlockValidator = (ajv) => {
   const tokenRefKeys = Object.keys(TOKEN_REF_MAP).sort()
 
   schema.$defs['slot-spec'].properties.allows.items.enum = blockNames
-  schema.$defs['field-ref'].properties['ref-type'].enum = primitiveNames
+
+  // field-ref.ref-type is `oneOf: [string, array<string>]`. Inject the
+  // primitive-names enum into BOTH branches — string form (legacy) and
+  // array form (discriminated union for control fields).
+  const refTypeBranches = schema.$defs['field-ref'].properties['ref-type'].oneOf
+  refTypeBranches[0].enum = primitiveNames           // string branch
+  refTypeBranches[1].items.enum = primitiveNames     // array branch
+
   schema.$defs['variant-token-ref'].properties.tokenRef.enum = tokenRefKeys
 
   requireArray('block.slot-spec.allows.items.enum',
     schema.$defs['slot-spec'].properties.allows.items.enum)
-  requireArray('block.field-ref.ref-type.enum',
-    schema.$defs['field-ref'].properties['ref-type'].enum)
+  requireArray('block.field-ref.ref-type.oneOf[0].enum',
+    refTypeBranches[0].enum)
+  requireArray('block.field-ref.ref-type.oneOf[1].items.enum',
+    refTypeBranches[1].items.enum)
   requireArray('block.variant-token-ref.tokenRef.enum',
     schema.$defs['variant-token-ref'].properties.tokenRef.enum)
 

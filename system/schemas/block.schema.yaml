@@ -88,8 +88,21 @@ $defs:
       required: { type: boolean }
       ref-kind: { const: primitive }
       ref-type:
-        type: string
-        # enum populated at load-time with primitive names
+        # Two accepted forms:
+        #   string  → single primitive type (e.g., "action")        [legacy form]
+        #   array   → discriminated union over N primitive types    [union form]
+        # Both branches get their enum injected at load-time with primitive
+        # names. See render/load-schemas.js:buildBlockValidator and
+        # render/screen-schema-builder.js:buildFieldInstanceSchema.
+        oneOf:
+          - type: string
+            # enum populated at load-time with primitive names
+          - type: array
+            minItems: 1
+            uniqueItems: true
+            items:
+              type: string
+              # enum populated at load-time with primitive names
     required: [type, ref-kind, ref-type]
 
   slot-spec:
