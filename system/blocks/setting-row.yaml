@@ -1,0 +1,20 @@
+type: setting-row
+description: Labeled row with a control — toggle for state, action for triggers
+role: atomic
+
+fields:
+  label:
+    type: string
+    required: true
+    max-length: 60
+  description:
+    type: string
+    max-length: 180
+  control:
+    type: ref
+    ref-kind: primitive
+    ref-type: [toggle, action]
+    required: true
+
+variants:
+  tone: { tokenRef: tone }

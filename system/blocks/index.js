@@ -94,4 +94,20 @@ export const blocks = {
   <div data-field="cta">${ctx.renderPrimitive(data.cta)}</div>
 </article>`
   },
+
+  // Setting-row — atomic block for a labeled control (toggle or action).
+  // Two-column grid: label-group left, control right. Container query in
+  // CSS stacks vertically below 500px.
+  'setting-row': (data, ctx) => {
+    const tone = escape(data.tone ?? 'neutral')
+    const descriptionFrag = data.description
+      ? `\n    <p data-field="description">${escape(data.description)}</p>`
+      : ''
+    return `<article data-block="setting-row" data-tone="${tone}">
+  <header data-field="label-group">
+    <h3 data-field="label">${escape(data.label)}</h3>${descriptionFrag}
+  </header>
+  <div data-field="control">${ctx.renderPrimitive(data.control)}</div>
+</article>`
+  },
 }
