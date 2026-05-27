@@ -225,6 +225,69 @@
   }
 }
 
+/* Setting-row — labeled atomic block hosting a control primitive.
+   Lives in section.body alongside cards. Container query collapses to
+   vertical stack on narrow widths. */
+
+[data-block="setting-row"] {
+  container-type: inline-size;
+  display: block;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid var(--role-border);
+  background: var(--role-surface);
+  color: var(--role-text);
+}
+
+[data-block="setting-row"]:first-child {
+  border-top: none;
+}
+
+[data-block="setting-row"] [data-field="label-group"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+[data-block="setting-row"] [data-field="label"] {
+  font-size: var(--type-heading-sm-size);
+  line-height: var(--type-heading-sm-leading);
+  font-weight: 500;
+}
+
+[data-block="setting-row"] [data-field="description"] {
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  max-width: 60ch;
+  opacity: 0.8;
+}
+
+[data-block="setting-row"] [data-field="control"] {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Default: stacked layout (narrow). At ≥500px container width, switch
+   to two-column row: label-group fills, control anchors right. */
+[data-block="setting-row"] {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: var(--spacing-sm);
+}
+
+@container (min-width: 500px) {
+  [data-block="setting-row"] {
+    grid-template-columns: 1fr auto;
+    column-gap: var(--spacing-xl);
+    align-items: center;
+    row-gap: 0;
+  }
+  [data-block="setting-row"] [data-field="control"] {
+    align-self: center;
+  }
+}
+
 /* ===== Primitives ===== */
 /* Primitives are leaf elements rendered inside block fields. They inherit
    the surrounding block's --role-* variables for tone-aware coloring. */
