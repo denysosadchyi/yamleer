@@ -8,7 +8,8 @@
     "validate": "node render/validate.js",
     "tokens": "node render/tokens-to-css.js",
     "render": "node render/render.js",
-    "build": "node render/render.js",
+    "build": "node render/render.js && node render/yaml-explorer.js && node render/architecture.js",
+    "watch": "node render/watch.js",
     "serve": "python3 -m http.server 8000 -d dist"
   },
   "dependencies": {
