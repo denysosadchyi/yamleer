@@ -4,7 +4,7 @@ description: Slotted multi-zone layout — header, main, optional footer
 mode: slotted
 slots:
   header:
-    allows: [hero-text]
+    allows: [hero-text, page-header]
     cardinality: one
     required: true
   main:

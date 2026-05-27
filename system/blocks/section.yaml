@@ -13,7 +13,7 @@ fields:
 
 slots:
   body:
-    allows: [card, setting-row]
+    allows: [card, setting-row, task-item]
     cardinality: many
     required: true
     min: 1
