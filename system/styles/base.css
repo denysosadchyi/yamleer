@@ -15,7 +15,7 @@
 }
 
 body {
-  background: var(--color-surface-muted);
+  background: var(--color-canvas);
 }
 
 /* ----- Headings (1:1 mapping to type styles, large → small) ----- */
@@ -23,7 +23,8 @@ body {
 h1, h2, h3, h4 {
   margin: 0;
   text-wrap: balance;
-  color: var(--color-text-primary);
+  /* color inherits — adapts to --role-text inside [data-block], or
+     falls back to :root color (--color-text-primary) outside blocks */
 }
 
 h1 {

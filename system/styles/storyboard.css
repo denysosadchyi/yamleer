@@ -12,7 +12,7 @@
 /* Outer grid: auto-flow columns sized to a comfortable screen width. */
 [data-storyboard] {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(720px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
   gap: var(--spacing-xl);
   padding: var(--spacing-xl);
   max-width: 1600px;

@@ -1,3 +1,5 @@
+canvas: "oklch(94% 0.005 250)"
+
 surface-neutral: "oklch(99% 0.003 250)"
 surface-emphasis: "oklch(23% 0.04 250)"
 surface-muted: "oklch(96% 0.005 250)"

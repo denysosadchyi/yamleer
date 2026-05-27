@@ -16,6 +16,17 @@
  * tone-* or color-* directly.
  */
 
+/* ===== Template containment =====
+ * The template root is a query container so child blocks (including
+ * blocks that are themselves containers) can @container against the
+ * template's width. Without this, blocks have no container ancestor
+ * in standalone pages — only inside the storyboard's [data-frame-body].
+ */
+
+[data-template] {
+  container-type: inline-size;
+}
+
 /* ===== Block frame defaults ===== */
 /* Every block gets a container-query scope and the neutral tone-set as
    default role values. Specific blocks set background/padding/borders
@@ -127,26 +138,8 @@
 
 [data-block="section"] [data-field="body"] {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--spacing-md);
-}
-
-@container (min-width: 480px) {
-  [data-block="section"] [data-field="body"] {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@container (min-width: 720px) {
-  [data-block="section"] [data-field="body"] {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@container (min-width: 960px) {
-  [data-block="section"] [data-field="body"] {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }
 
 [data-block="section"][data-density="compact"] [data-field="body"] {
