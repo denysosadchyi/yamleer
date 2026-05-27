@@ -45,7 +45,16 @@ $defs:
       - $ref: "#/$defs/field-string"
       - $ref: "#/$defs/field-number"
       - $ref: "#/$defs/field-enum"
+      - $ref: "#/$defs/field-boolean"
       - $ref: "#/$defs/field-ref"
+
+  field-boolean:
+    type: object
+    additionalProperties: false
+    properties:
+      type: { const: boolean }
+      required: { type: boolean }
+    required: [type]
 
   field-string:
     type: object
